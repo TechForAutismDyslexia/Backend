@@ -42,25 +42,19 @@ router.post("/doctorRegister",auth,async (req,res)=>{
         res.status(400).send(err);
     }
 });
-
+//to retrive all children played that game
 router.get("/:id", auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
     
     const gamer = req.params.id;
-    
-    try {
-        const games = await Game.find({ id: gamer});
-        console.log(games);
-        const results = await Promise.all(games.map(async (game) => {
-            const child = await Child.findById(game.childId);
-            return { game, child };
-        }));
-
-        res.send(results);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Internal Server Error");
+    try{
+        const games = await Game.find({_id:gamer});
+        res.send(games);
     }
+    catch(err){
+        res.status(400).send(err);
+    }
+
 });
 
 
