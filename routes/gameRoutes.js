@@ -1,5 +1,5 @@
 const express = require('express');
-const Game = require('../models/Game');
+const Game = require('../models/GameStatus');
 const Child = require('../models/child');
 const auth = require('../middleware/auth');
 const router = express.Router();
@@ -34,10 +34,16 @@ router.put('/game/:childId', auth, async (req, res) => {
 
     // If the game status is completed, update the corresponding game status in the child's document
     if (status) {
-      // Determine the index of the game based on the gameId
-      const gameIndex = parseInt(gameId) - 1; // Assuming gameId is a string like '1', '2', '3', etc.
-      if (gameIndex >= 0 && gameIndex < child.gamesCompleted.length) {
-        child.gamesCompleted[gameIndex] = true;
+      // Add the gameId to the gamesCompleted array if it's not already there
+      if (!child.gamesCompleted.includes(gameId)) {
+        child.gamesCompleted.push(gameId);
+        await child.save();
+      }
+    } else {
+      // Remove the gameId from the gamesCompleted array if the game is not completed
+      const index = child.gamesCompleted.indexOf(gameId);
+      if (index > -1) {
+        child.gamesCompleted.splice(index, 1);
         await child.save();
       }
     }

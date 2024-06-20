@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Userdata = require('../models/Userdata');
+const Game = require('../models/GameStatus');
 const router = express.Router();
 const auth = require('../middleware/auth');
 
@@ -42,6 +43,25 @@ router.post("/doctorRegister",auth,async (req,res)=>{
     }
 });
 
-// router.get("/:gameId",auth, async(req,res)=>{
+router.get("/:id", auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+    
+    const gamer = req.params.id;
+    
+    try {
+        const games = await Game.find({ id: gamer});
+        console.log(games);
+        const results = await Promise.all(games.map(async (game) => {
+            const child = await Child.findById(game.childId);
+            return { game, child };
+        }));
+
+        res.send(results);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 
 module.exports = router;

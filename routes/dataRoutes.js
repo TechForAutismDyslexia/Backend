@@ -1,7 +1,7 @@
 const express = require('express');
 const Child = require('../models/child');
 const User = require('../models/User');
-const Games = require('../models/Game');
+const Games = require('../models/GameStatus');
 const Userdata =require('../models/Userdata');
 const auth = require('../middleware/auth');
 

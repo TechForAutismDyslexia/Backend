@@ -9,7 +9,7 @@ const childSchema = new Schema({
   parentDetails: { type: String, ref: 'User', required: true },
   parentId : { type: Schema.Types.ObjectId, required: true },
   age: { type: Number, required: true },
-  gamesCompleted: { type: [Boolean], default: [false,false,false,false,false] },
+  gamesCompleted: { type: [String], default: [] },
   adminStatus: { type: Boolean, default: false }
 });
 
