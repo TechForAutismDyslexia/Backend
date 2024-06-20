@@ -5,8 +5,9 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 // Create or Update game for a child
-router.put('/game/:childId', auth, async (req, res) => {
-  const { gameId, tries, timer, status } = req.body;
+router.put('/:childId', auth, async (req, res) => {
+  if (req.user.role !== 'caretaker') return res.status(403).send('Access Denied');
+  const { gameId, tries, timer,status} = req.body;
   const { childId } = req.params;
 
   // Validate childId

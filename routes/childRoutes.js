@@ -10,8 +10,9 @@ router.post('/childinfo', auth, async (req, res) => {
 
   const { name, centreId, age } = req.body;
   parent = await User.findById(req.user._id);
+  console.log(parent)
   const parentId = parent._id;
-  const parentDetail = parent.name;
+  const parentDetail = parent.username;
   console.log(parentDetail);
   const child = new Child({
     name,
