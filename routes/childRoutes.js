@@ -10,13 +10,15 @@ router.post('/childinfo', auth, async (req, res) => {
 
   const { name, centreId, age } = req.body;
   parent = await User.findById(req.user._id);
-  const parentDetail = parent.username;
+  const parentId = parent._id;
+  const parentDetail = parent.name;
   console.log(parentDetail);
   const child = new Child({
     name,
     centreId,
     age,
-    parentDetails: parentDetail
+    parentDetails: parentDetail,
+    parentId
   });
 
   try {
@@ -71,5 +73,14 @@ router.get('/doctor/assigned', auth, async (req, res) => {
     res.status(400).send(err);
   }
 });
-
+router.get('/:parentId/child',auth,async(req,res) => {
+  if(req.user.role !== 'parent') return res.status(400).send('Access Denied');
+  try{
+    const children = await Child.find({parentId:req.params.parentId});
+    res.send(children);
+  }
+  catch(err){
+    res.status(400).send(err);
+  }
+});
 module.exports = router;
