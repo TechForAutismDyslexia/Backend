@@ -24,7 +24,7 @@ app.use('/api/children', childRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/admin',adminRoutes);
-app.post('/' , (req,res) => {
+app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
 });
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
