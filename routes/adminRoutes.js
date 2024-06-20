@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Userdata = require('../models/Userdata');
+const Child = require('../models/child');
 const Game = require('../models/GameStatus');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -48,8 +49,13 @@ router.get("/:id", auth, async (req, res) => {
     
     const gamer = req.params.id;
     try{
-        const games = await Game.find({_id:gamer});
-        res.send(games);
+        const games = await Game.find({gameId:gamer});
+        console.log(games);
+        //get child details from childid fetched from games
+        fetchchildId = games.map((game) => game.childId);
+        const children = await Child.find({_id:fetchchildId});
+        console.log(children);
+        res.send(children);
     }
     catch(err){
         res.status(400).send(err);
