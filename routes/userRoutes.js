@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Userdata = require('../models/Userdata');
 const router = express.Router();
 const auth = require('../middleware/auth');
 // Register
@@ -34,22 +33,5 @@ router.post('/login', async (req, res) => {
 
   const token = jwt.sign({ id: user._id }, '8328211811');
   res.header('Authorization', token).send(token);
-});
-
-// update userdata
-router.post('/userdatafill',auth, async (req, res) => {
-  if(req.user.role == 'admin') return res.status(403).send('Access Denied');
-  const {name,mobilenumber} = req.body;
-  const role = req.user.role;
-  const userId = req.user._id;
-  const username = req.user.username;
-  const status = true;
-  const userdata = new Userdata({name,mobilenumber,role,userId,username,status});
-  try {
-    const savedUserdata = await userdata.save();
-    res.send(savedUserdata);
-  } catch (err) {
-    res.status(400).send(err);
-  }
 });
 module.exports = router;
