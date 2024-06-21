@@ -9,13 +9,13 @@ const auth = require('../middleware/auth');
 // Register
 router.post('/careTakerRegister',auth, async (req, res) => {
     if(req.user.role !== 'admin') return res.status(403).send("Access Denied");
-    const{username,password} = req.body;
+    const { username, password, name, mobilenumber,email} = req.body;
     const role = 'caretaker';
     //check if user already exists
     const user = await User.findOne({username});
     if(user) return res.status(400).send('User already exists');
     const hashedPassword = await bcrypt.hash(password, 10)
-    const users = new User({username,password:hashedPassword,role});
+    const users = new User({ username, password: hashedPassword, role,name,mobilenumber,email });
     try{
         const savedUser = await users.save();
         res.send(savedUser);    
@@ -27,12 +27,12 @@ router.post('/careTakerRegister',auth, async (req, res) => {
 
 router.post("/doctorRegister",auth,async (req,res)=>{
     if(req.user.role !== 'admin') return res.status(403).send("Access Denied");
-    const {username,password} = req.body;
+    const { username, password, name, mobilenumber,email} = req.body;
     const role = "doctor"
     const user  =  await User.findOne({username});
     if(user) return res.status(400).send("User already exists");
     const hashedPassword = await bcrypt.hash(password,10);
-    const users =  new User({username,password:hashedPassword,role});
+    const users = new User({ username, password: hashedPassword, role,name,mobilenumber,email });
     try{
         const savedUser =  await users.save();
         res.send(savedUser);

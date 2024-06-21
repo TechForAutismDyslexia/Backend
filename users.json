@@ -1,5 +1,143 @@
-{
-    "username":"Barkathpura",
-    "password":"12345678",
-    "role":"admin"
-}
+[
+    {
+        "username": "Barkathpura",
+        "password": "12345678",
+        "role": "admin"
+    },
+    {
+        "username": "sunilsharma",
+        "password": "sunil",
+        "role": "parent",
+        "name": "Sunil Sharma",
+        "mobilenumber": 1234567890,
+        "email": "sunil@gmail.com"
+    },
+    {
+        "username": "priyagupta",
+        "password": "priya",
+        "role": "parent",
+        "name": "Priya Gupta",
+        "mobilenumber": 1234567890,
+        "email": "priya@gmail.com"
+    },
+    {
+        "username": "ankitpatel",
+        "password": "ankit",
+        "role": "parent",
+        "name": "Ankit Patel",
+        "mobilenumber": 1234567890,
+        "email": "ankit@gmail.com"
+    },
+    {
+        "username": "snehakumar",
+        "password": "sneha",
+        "role": "parent",
+        "name": "Sneha Kumar",
+        "mobilenumber": 1234567890,
+        "email": "sneha@gmail.com"
+    },
+    {
+        "username": "rajeshjoshi",
+        "password": "rajesh",
+        "role": "parent",
+        "name": "Rajesh Joshi",
+        "mobilenumber": 1234567890,
+        "email": "rajesh@gmail.com"
+    },
+    {
+        "username": "poojamehta",
+        "password": "pooja",
+        "role": "parent",
+        "name": "Pooja Mehta",
+        "mobilenumber": 1234567890,
+        "email": "pooja@gmail.com"
+    },
+    {
+        "username": "vikramreddy",
+        "password": "vikram",
+        "role": "parent",
+        "name": "Vikram Reddy",
+        "mobilenumber": 1234567890,
+        "email": "vikram@gmail.com"
+    },
+    {
+        "username": "nehasingh",
+        "password": "neha",
+        "role": "parent",
+        "name": "Neha Singh",
+        "mobilenumber": 1234567890,
+        "email": "neha@gmail.com"
+    },
+    {
+        "username": "mohanmenon",
+        "password": "mohan",
+        "role": "parent",
+        "name": "Mohan Menon",
+        "mobilenumber": 1234567890,
+        "email": "mohan@gmail.com"
+    },
+    {
+        "username": "drraviverma",
+        "password": "ravi",
+        "role": "doctor",
+        "name": "Dr. Ravi Verma",
+        "mobilenumber": 1234567890,
+        "email": "raviverma@gmail.com"
+    },
+    {
+        "username": "dranjalirao",
+        "password": "anjali",
+        "role": "doctor",
+        "name": "Dr. Anjali Rao",
+        "mobilenumber": 1234567890,
+        "email": "anjalirao@gmail.com"
+    },
+    {
+        "username": "drrajivmenon",
+        "password": "rajiv",
+        "role": "doctor",
+        "name": "Dr. Rajiv Menon",
+        "mobilenumber": 1234567890,
+        "email": "rajivmenon@gmail.com"
+    },
+    {
+        "username": "radhanair",
+        "password": "radha",
+        "role": "caretaker",
+        "name": "Radha Nair",
+        "mobilenumber": 1234567890,
+        "email": "radhanair@gmail.com"
+    },
+    {
+        "username": "lakshmiiyer",
+        "password": "lakshmi",
+        "role": "caretaker",
+        "name": "Lakshmi Iyer",
+        "mobilenumber": 1234567890,
+        "email": "lakshmiiyer@gmail.com"
+    },
+    {
+        "username": "geetabansal",
+        "password": "geeta",
+        "role": "caretaker",
+        "name": "Geeta Bansal",
+        "mobilenumber": 1234567890,
+        "email": "geetabansal@gmail.com"
+    },
+    {
+        "username": "saraswatisharma",
+        "password": "saraswati",
+        "role": "caretaker",
+        "name": "Saraswati Sharma",
+        "mobilenumber": 1234567890,
+        "email": "saraswatisharma@gmail.com"
+    },
+    {
+        "username": "anitadeshmukh",
+        "password": "anita",
+        "role": "caretaker",
+        "name": "Anita Deshmukh",
+        "mobilenumber": 1234567890,
+        "email": "anitadeshmukh@gmail.com"
+    }
+]
