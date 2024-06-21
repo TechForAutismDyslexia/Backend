@@ -5,14 +5,14 @@ const User = require('../models/User');
 const router = express.Router();
 const auth = require('../middleware/auth');
 // Register
-router.post('/register', async (req, res) => {
-  const { username, password} = req.body;
+router.post('/parentregister', async (req, res) => {
+  const { username, password, name, mobilenumber,email} = req.body;
   const role = 'parent';
   //check if user already exists
   const user = await User.findOne({ username});
   if (user) return res.status(400).send('User already exists');
   const hashedPassword = await bcrypt.hash(password, 10);
-  const users = new User({ username, password: hashedPassword, role });
+  const users = new User({ username, password: hashedPassword, role,name,mobilenumber,email });
 
   try {
     const savedUser = await users.save();
