@@ -14,7 +14,11 @@ const PORT = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 // Database connection
+<<<<<<< HEAD
 mongoose.connect('mongodb+srv://yssmc24:Yssmc@2403@jwl.ec7ksjf.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
+=======
+mongoose.connect('mongodb+srv://shivasaicharandodda:9nnaypS3Um6Z6eMU@cluster.47f8iht.mongodb.net/tfad', { useNewUrlParser: true, useUnifiedTopology: true })
+>>>>>>> 05174a98de6d3762d4cb68375c3725513984db1a
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
