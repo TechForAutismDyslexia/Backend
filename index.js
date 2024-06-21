@@ -7,6 +7,7 @@ const childRoutes = require('./routes/childRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const dataRoutes = require('./routes/dataRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 const app = express();
 const PORT = 5000;
 
@@ -24,6 +25,7 @@ app.use('/api/children', childRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/admin',adminRoutes);
+app.use('/api/feedback',feedbackRoutes);
 app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
 });
