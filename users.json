@@ -1,12 +1,12 @@
 [
     {
         "username": "Barkathpura",
-        "password": "12345678",
+        "password": "$2a$10$HKyPpLPi.RkseDXVDi6gV.sH6MSf4T/yyXUlfQIQNhk7ddlf1Jimm",
         "role": "admin"
     },
     {
         "username": "sunilsharma",
-        "password": "sunil",
+        "password": "$2a$10$qeNEqeR5jCVEUDT3/sMlX.JLZvcBt2BwBrgCgieZ9CwFVGUjyR1o.",
         "role": "parent",
         "name": "Sunil Sharma",
         "mobilenumber": 1234567890,
@@ -14,7 +14,7 @@
     },
     {
         "username": "priyagupta",
-        "password": "priya",
+        "password": "$2a$10$n1LyTxvqSKrjRMrZhy55l.Q3LdggHQx0Poxr/vMpe/Kk3rQJoHz66",
         "role": "parent",
         "name": "Priya Gupta",
         "mobilenumber": 1234567890,
@@ -22,7 +22,7 @@
     },
     {
         "username": "ankitpatel",
-        "password": "ankit",
+        "password": "$2a$10$7Tn5GYZY.ssipIwDGD1P.uUXWXipemm7huAYLWzqdSUYjNT95wexq",
         "role": "parent",
         "name": "Ankit Patel",
         "mobilenumber": 1234567890,
@@ -30,7 +30,7 @@
     },
     {
         "username": "snehakumar",
-        "password": "sneha",
+        "password": "$2a$10$HCCVKnPqnGGtbL1R0C9WsuJwm7VsYc0sN9ptuLawsURmYVNMs374G",
         "role": "parent",
         "name": "Sneha Kumar",
         "mobilenumber": 1234567890,
@@ -38,7 +38,7 @@
     },
     {
         "username": "rajeshjoshi",
-        "password": "rajesh",
+        "password": "$2a$10$0IQM0MEfegmFUB.q.1rFAO9OyL.dpDtZAv6nL90cgZ7nzKLMRZTum",
         "role": "parent",
         "name": "Rajesh Joshi",
         "mobilenumber": 1234567890,
@@ -46,7 +46,7 @@
     },
     {
         "username": "poojamehta",
-        "password": "pooja",
+        "password": "$2a$10$UrUfJx2agC19JZOTTU.qW.m678j8cdYSa.UdmhrTmBoeTUUNoDmiq",
         "role": "parent",
         "name": "Pooja Mehta",
         "mobilenumber": 1234567890,
@@ -54,7 +54,7 @@
     },
     {
         "username": "vikramreddy",
-        "password": "vikram",
+        "password": "$2a$10$e/eyzTytEy3yoeCOTb1.3ebtBfxHJQQAw9Mye4fi6g/9YHGWF4MDm",
         "role": "parent",
         "name": "Vikram Reddy",
         "mobilenumber": 1234567890,
@@ -62,7 +62,7 @@
     },
     {
         "username": "nehasingh",
-        "password": "neha",
+        "password": "$2a$10$ILGPWqNvVw5UKx.v7ScRxen.DhMESsXHz7ezAImyQqy1KEB.ws3nG",
         "role": "parent",
         "name": "Neha Singh",
         "mobilenumber": 1234567890,
@@ -70,7 +70,7 @@
     },
     {
         "username": "mohanmenon",
-        "password": "mohan",
+        "password": "$2a$10$D/xhUeyZJsyumNodu7dneOCWYrm1p4RheurY1FpV8itlyk8Tha5sC",
         "role": "parent",
         "name": "Mohan Menon",
         "mobilenumber": 1234567890,
@@ -78,7 +78,7 @@
     },
     {
         "username": "drraviverma",
-        "password": "ravi",
+        "password": "$2a$10$bn4ev7YJZ7YGgCU69QUDCe/zD/TMWl0AZZEIcLsMTtcXmx.NgZwdC",
         "role": "doctor",
         "name": "Dr. Ravi Verma",
         "mobilenumber": 1234567890,
@@ -86,7 +86,7 @@
     },
     {
         "username": "dranjalirao",
-        "password": "anjali",
+        "password": "$2a$10$z3uIf6Yp.0skrEJYr6.hcOeeXPJnaG2Bab9OtZzMgOROJugGeyH8C",
         "role": "doctor",
         "name": "Dr. Anjali Rao",
         "mobilenumber": 1234567890,
@@ -94,7 +94,7 @@
     },
     {
         "username": "drrajivmenon",
-        "password": "rajiv",
+        "password": "$2a$10$aLw5N0X3kSEnFLWuS3A1ROGO1CEAGsv8DXaEtUA/mzjgJUV9wL/KG",
         "role": "doctor",
         "name": "Dr. Rajiv Menon",
         "mobilenumber": 1234567890,
@@ -102,7 +102,7 @@
     },
     {
         "username": "radhanair",
-        "password": "radha",
+        "password": "$2a$10$UeRGa9EzejElz2IuqJBqjuyhif/JpBEAWsU9LClch6uKg2fi7okvG",
         "role": "caretaker",
         "name": "Radha Nair",
         "mobilenumber": 1234567890,
@@ -110,7 +110,7 @@
     },
     {
         "username": "lakshmiiyer",
-        "password": "lakshmi",
+        "password": "$2a$10$ISWfqWQFpLrG1Xo6PcqB3uyPnBWkd1XcErR7E8v9WsFUcV0lEX6rK",
         "role": "caretaker",
         "name": "Lakshmi Iyer",
         "mobilenumber": 1234567890,
@@ -118,7 +118,7 @@
     },
     {
         "username": "geetabansal",
-        "password": "geeta",
+        "password": "$2a$10$NVl1/4xIPM1uTkx7LSyTwO27ZkKBEnLwf7vBb0OYgFoURrbVjQ9bm",
         "role": "caretaker",
         "name": "Geeta Bansal",
         "mobilenumber": 1234567890,
@@ -126,7 +126,7 @@
     },
     {
         "username": "saraswatisharma",
-        "password": "saraswati",
+        "password": "$2a$10$GbZoyqdaI9lWWEzTjvxs8.rVv0rpM.sqU5KV.e5SQk0QyvQj7Loc2",
         "role": "caretaker",
         "name": "Saraswati Sharma",
         "mobilenumber": 1234567890,
@@ -134,7 +134,7 @@
     },
     {
         "username": "anitadeshmukh",
-        "password": "anita",
+        "password": "$2a$10$Jy7nVNVDrFO/2t.4TQtA/um2I9.SSBma1S9BOyPmAh.KAH4APPnRe",
         "role": "caretaker",
         "name": "Anita Deshmukh",
         "mobilenumber": 1234567890,
