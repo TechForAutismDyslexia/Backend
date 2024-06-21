@@ -14,7 +14,7 @@ const PORT = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 // Database connection
-mongoose.connect('mongodb://localhost:27017/TFDBACKEND', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://yssmc24:Yssmc@2403@jwl.ec7ksjf.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
@@ -26,5 +26,8 @@ app.use('/api/data', dataRoutes);
 app.use('/api/admin',adminRoutes);
 app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
+});
+app.get('/*' , (req,res) => {
+    res.send('You cannot access this page!');
 });
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
