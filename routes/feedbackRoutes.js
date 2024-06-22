@@ -50,5 +50,16 @@ router.put('/caretakerfeedback/:childId', auth, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+router.get('/feedback/:childId', auth, async (req, res) => {
+    const {childId} = req.params;
+    if (!childId) return res.status(400).send('Child ID is required');
+    try {
+        const feedbackDoc = await Feedback.findOne({ childId });
+        if (!feedbackDoc) return res.status(404).send('Feedback not found');
+        res.status(200).send(feedbackDoc);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
 
 module.exports = router;
