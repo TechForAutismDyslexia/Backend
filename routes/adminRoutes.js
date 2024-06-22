@@ -64,16 +64,15 @@ router.post("/doctorRegister",auth,async (req,res)=>{
     }
 });
 //to retrive all children played that game
-router.get("/:id", auth, async (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
-    
-    const gamer = req.params.id;
+router.get("/:centreId/:gameid", auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");   
+    const centre = req.params.centreId;
+    const gamer = req.params.gameid;
     try{
         const games = await Game.find({gameId:gamer});
-        console.log(games);
         //get child details from childid fetched from games
         fetchchildId = games.map((game) => game.childId);
-        const children = await Child.find({_id:fetchchildId});
+        const children = await Child.find({_id:fetchchildId,centreId:centre});
         console.log(children);
         res.send(children);
     }

@@ -18,7 +18,7 @@ router.put('/:childId', auth, async (req, res) => {
     const child = await Child.findById(childId);
     if (!child) return res.status(404).send('Child not found');
     if (req.user.role !== 'caretaker' || child.caretakerId.toString() !== req.user._id.toString()) {
-      return res.status(403).send('Access Denied');
+      return res.status(403).send('Different caretaker assigned to the child');
     }
 
     // Create or update a game entry

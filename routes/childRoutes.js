@@ -8,6 +8,8 @@ const router = express.Router();
 router.post('/childinfo', auth, async (req, res) => {
   if (req.user.role !== 'parent') return res.status(403).send('Access Denied');
   const { name, centreId, age } = req.body;
+  const childs = await Child.findOne({ name, centreId, age });
+  if (childs) return res.status(400).send('Child already exists');
   parent = await User.findById(req.user._id);
   console.log(parent)
   const parentId = parent._id;

@@ -5,6 +5,21 @@
         "role": "admin"
     },
     {
+        "username": "Himayathnagar",
+        "password": "$2a$10$HKyPpLPi.RkseDXVDi6gV.sH6MSf4T/yyXUlfQIQNhk7ddlf1Jimm",
+        "role": "admin"
+    },
+    {
+        "username": "Champapet",
+        "password": "$2a$10$HKyPpLPi.RkseDXVDi6gV.sH6MSf4T/yyXUlfQIQNhk7ddlf1Jimm",
+        "role": "admin"
+    },
+    {
+        "username": "Nacharam",
+        "password": "$2a$10$HKyPpLPi.RkseDXVDi6gV.sH6MSf4T/yyXUlfQIQNhk7ddlf1Jimm",
+        "role": "admin"
+    },
+    {
         "username": "sunilsharma",
         "password": "$2a$10$qeNEqeR5jCVEUDT3/sMlX.JLZvcBt2BwBrgCgieZ9CwFVGUjyR1o.",
         "role": "parent",
