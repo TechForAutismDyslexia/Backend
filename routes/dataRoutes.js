@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 const Feedback = require('../models/Feedback');
 const router = express.Router();
 
-router.get('/:centreId/allchilds',auth, async (req, res) => {
+router.get('/:centreId/allchildren',auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
     const { centreId } = req.params;
     try {
