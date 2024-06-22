@@ -7,7 +7,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 
 // Get assigned children for caretaker
-router.get('/caretaker/assigned', auth, async (req, res) => {
+router.get('/assigned', auth, async (req, res) => {
     if (req.user.role !== 'caretaker') return res.status(403).send('Access Denied');
 
     try {

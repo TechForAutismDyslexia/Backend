@@ -34,7 +34,7 @@ router.post('/childinfo', auth, async (req, res) => {
   });
 
 // Get all children for parent
-router.get('/childs', auth, async (req, res) => {
+router.get('/children', auth, async (req, res) => {
     if (req.user.role !== 'parent') return res.status(403).send('Access Denied');
     try {
       const children = await Child.find({ parentId: req.user._id });

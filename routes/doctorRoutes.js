@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 // Get assigned children and caretakers for doctor
-router.get('/doctor/assigned', auth, async (req, res) => {
+router.get('/assigned', auth, async (req, res) => {
   if (req.user.role !== 'doctor') return res.status(403).send('Access Denied');
 
   try {
