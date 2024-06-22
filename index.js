@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
-const childRoutes = require('./routes/childRoutes');
-const gameRoutes = require('./routes/gameRoutes');
 const dataRoutes = require('./routes/dataRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const feedbackRoutes = require('./routes/feedbackRoutes');
+const caretakerRoutes = require('./routes/caretakerRoutes');
+const doctorRoutes = require('./routes/doctorRoutes');
+const parentRoutes = require('./routes/parentRoutes');
 const app = express();
 const PORT = 5000;
 
@@ -21,11 +21,11 @@ mongoose.connect('mongodb+srv://shivasaicharandodda:9nnaypS3Um6Z6eMU@cluster.47f
 
 // Routes
 app.use('/api/users', userRoutes);
-app.use('/api/children', childRoutes);
-app.use('/api/game', gameRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/admin',adminRoutes);
-app.use('/api/feedback',feedbackRoutes);
+app.use('/api/caretaker',caretakerRoutes);
+app.use('/api/doctor',doctorRoutes);
+app.use('/api/parent',parentRoutes);
 app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
 });

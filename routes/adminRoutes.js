@@ -28,7 +28,7 @@ router.put('/:id/assign', auth, async (req, res) => {
   });
   
 
-// Register
+// Register Caretaker
 router.post('/careTakerRegister',auth, async (req, res) => {
     if(req.user.role !== 'admin') return res.status(403).send("Access Denied");
     const { username, password, name, mobilenumber,email} = req.body;
@@ -47,6 +47,7 @@ router.post('/careTakerRegister',auth, async (req, res) => {
     }
 });
 
+// Register Doctor
 router.post("/doctorRegister",auth,async (req,res)=>{
     if(req.user.role !== 'admin') return res.status(403).send("Access Denied");
     const { username, password, name, mobilenumber,email} = req.body;
@@ -63,6 +64,7 @@ router.post("/doctorRegister",auth,async (req,res)=>{
         res.status(400).send(err);
     }
 });
+
 //to retrive all children played that game
 router.get("/:centreId/:gameid", auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send("Access Denied");   

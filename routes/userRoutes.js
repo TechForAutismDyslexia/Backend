@@ -5,7 +5,7 @@ const User = require('../models/User');
 const router = express.Router();
 const auth = require('../middleware/auth');
 // Register
-router.post('/parentregister', async (req, res) => {
+router.post('/register', async (req, res) => {
   const { username, password, name, mobilenumber,email} = req.body;
   const role = 'parent';
   //check if user already exists
