@@ -19,7 +19,7 @@ router.get('/assigned', auth, async (req, res) => {
 });
 
 // Feedback
-router.put('/doctorfeedback/:childId', auth, async (req, res) => {
+router.put('/feedback/:childId', auth, async (req, res) => {
     if (req.user.role !== 'doctor') return res.status(403).send('Access Denied');
     const {childId} = req.params;
     const {feedback} = req.body;
