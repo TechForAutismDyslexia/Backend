@@ -8,7 +8,6 @@ const adminRoutes = require('./routes/adminRoutes');
 const caretakerRoutes = require('./routes/caretakerRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const parentRoutes = require('./routes/parentRoutes');
-const fetchRoutes = require('./routes/fetchRoutes');
 const app = express();
 const PORT = 5000;
 
@@ -27,7 +26,6 @@ app.use('/api/admin',adminRoutes);
 app.use('/api/caretaker',caretakerRoutes);
 app.use('/api/doctor',doctorRoutes);
 app.use('/api/parent',parentRoutes);
-app.use('/api/fetch',fetchRoutes);
 app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
 });
