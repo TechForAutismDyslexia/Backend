@@ -7,7 +7,6 @@ const router = express.Router();
 // Add child information (Parent)
 router.post('/childinfo', auth, async (req, res) => {
   if (req.user.role !== 'parent') return res.status(403).send('Access Denied');
-
   const { name, centreId, age } = req.body;
   parent = await User.findById(req.user._id);
   console.log(parent)
