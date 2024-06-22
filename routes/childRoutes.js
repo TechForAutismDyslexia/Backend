@@ -29,26 +29,6 @@ router.post('/childinfo', auth, async (req, res) => {
   }
 });
 
-// Admin assigns doctor and caretaker
-router.put('/:id/assign', auth, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
-
-  const { caretakerId, doctorId } = req.body;
-
-  try {
-    const child = await Child.findById(req.params.id);
-    if (!child) return res.status(404).send('Child not found');
-
-    child.caretakerId = caretakerId;
-    child.doctorId = doctorId;
-    child.adminStatus = true;
-
-    const updatedChild = await child.save();
-    res.send(updatedChild);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
 
 // Get assigned children for caretaker
 router.get('/caretaker/assigned', auth, async (req, res) => {

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const feedbackschema = new Schema({
     childId :{type :mongoose.Schema.Types.ObjectId, ref : 'Child',required: true},
-    role : 'doctor',
+    role : { type: String, required: true, enum: ['caretaker', 'parent', 'doctor', 'admin'] },
     name : { type: String, required: true},
     feedback: { type: [String], default:[] }
 })

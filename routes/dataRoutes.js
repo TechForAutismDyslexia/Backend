@@ -10,7 +10,8 @@ router.get('/allchilds',auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
     try {
         const children = await Child.find();
-        res.send(children);
+        const childetails = child.name;
+        res.send(childdetails);
     } catch (err) {
         res.status(400).send(err);
     }

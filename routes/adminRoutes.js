@@ -6,6 +6,28 @@ const Game = require('../models/GameStatus');
 const router = express.Router();
 const auth = require('../middleware/auth');
 
+// Admin assigns doctor and caretaker
+router.put('/:id/assign', auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
+  
+    const { caretakerId, doctorId } = req.body;
+  
+    try {
+      const child = await Child.findById(req.params.id);
+      if (!child) return res.status(404).send('Child not found');
+  
+      child.caretakerId = caretakerId;
+      child.doctorId = doctorId;
+      child.adminStatus = true;
+  
+      const updatedChild = await child.save();
+      res.send(updatedChild);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  });
+  
+
 // Register
 router.post('/careTakerRegister',auth, async (req, res) => {
     if(req.user.role !== 'admin') return res.status(403).send("Access Denied");
