@@ -15,7 +15,7 @@ const PORT = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 // Database connection
-mongoose.connect('mongodb+srv://shivasaicharandodda:9nnaypS3Um6Z6eMU@cluster.47f8iht.mongodb.net/tfad', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://shivasaicharandodda:9nnaypS3Um6Z6eMU@cluster.47f8iht.mongodb.net/tfad', { useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
