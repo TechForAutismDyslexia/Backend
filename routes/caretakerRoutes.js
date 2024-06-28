@@ -5,12 +5,12 @@ const Child = require('../models/child');
 const Game = require('../models/GameStatus');
 const router = express.Router();
 const auth = require('../middleware/auth');
-
+const Gametrial = require('../models/Gametrial');
 // Get assigned children for caretaker
 router.get('/assigned', auth, async (req, res) => {
     if (req.user.role !== 'caretaker') return res.status(403).send('Access Denied');
 
-    try {
+    try { 
         const children = await Child.find({ caretakerId: req.user._id });
         res.send(children);
     } catch (err) {
@@ -65,6 +65,16 @@ router.put('/:childId', auth, async (req, res) => {
 
         res.send(game);
     } catch (err) {
+        res.status(400).send(err);
+    }
+});
+router.post('/sendgamedata',async (req,res)=>{
+    const {gameId,tries,timer,status,childId} = req.body;
+    try{
+        const game = new Gametrial({gameId,tries,timer,status,childId});
+        await game.save();
+        res.status(200).send("Game data saved succesfully");
+    }catch(err){
         res.status(400).send(err);
     }
 });
