@@ -71,7 +71,7 @@ router.put('/:childId', auth, async (req, res) => {
 router.post('/sendgamedata',async (req,res)=>{
     const {gameId,tries,timer,status,childId} = req.body;
     try{
-        const game = new Gametrial({gameId,tries,timer,status,childId});
+        const game = new Gametrial({gameId,tries,timer,status});
         await game.save();
         res.status(200).send("Game data saved succesfully");
     }catch(err){
