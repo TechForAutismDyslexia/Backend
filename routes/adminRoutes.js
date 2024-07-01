@@ -17,8 +17,13 @@ router.put('/:id/assign', auth, async (req, res) => {
       if (!child) return res.status(404).send('Child not found');
   
       child.caretakerId = caretakerId;
+      const caretakerName = await User.findById(caretakerId);
       child.doctorId = doctorId;
+      const doctorName = await User.findById(doctorId);
       child.adminStatus = true;
+      child.caretakerName = caretakerName.name;
+      child.doctorName = doctorName.name;
+
   
       const updatedChild = await child.save();
       res.send(updatedChild);
