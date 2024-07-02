@@ -4,14 +4,18 @@ const User = require('../models/User');
 const Games = require('../models/GameStatus');
 const auth = require('../middleware/auth');
 const Feedback = require('../models/Feedback');
+const Centre = require('../models/Centre');
 const router = express.Router();
 
-router.get('/:centreId/allchildren',auth, async (req, res) => {
+router.get('/allchildren',auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
-    const { centreId } = req.params;
+    console.log(req.user._id);
+    const userdata = await User.findById(req.user._id);
+    const Maincentre = userdata.username;
+    const centre = await Centre.findOne({name:Maincentre});
+    const Maincentreid = centre.centreId;
     try {
-        const children = await Child.find({centreId:centreId});
-        // const childetails = child.name;
+        const children = await Child.find({centreId:Maincentreid});
         res.send(children);
     } catch (err) {
         res.status(400).send(err);
