@@ -2,8 +2,10 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Child = require('../models/child');
+const Centre = require('../models/Centre');
 const Game = require('../models/GameStatus');
 const router = express.Router();
+
 const auth = require('../middleware/auth');
 
 // Admin assigns doctor and caretaker
@@ -71,9 +73,11 @@ router.post("/doctorRegister",auth,async (req,res)=>{
 });
 
 //to retrive all children played that game
-router.get("/:centreId/:gameid", auth, async (req, res) => {
+router.get("/gamedetails/:gameid", auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send("Access Denied");   
-    const centre = req.params.centreId;
+    // const centre = req.params.centreId;
+    const centredetails = await  Centre.findOne({centerid:req.user._id});
+    const centre = centredetails.centreId;
     const gamer = req.params.gameid;
     try{
         const games = await Game.find({gameId:gamer});
