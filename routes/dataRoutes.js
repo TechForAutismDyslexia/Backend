@@ -5,6 +5,7 @@ const Games = require('../models/GameStatus');
 const auth = require('../middleware/auth');
 const Feedback = require('../models/Feedback');
 const Centre = require('../models/Centre');
+const Gameinfo = require('../models/Gameinfo');
 const router = express.Router();
 
 router.get('/allchildren',auth, async (req, res) => {
@@ -38,6 +39,15 @@ router.get("/allcaretakers",auth, async (req, res) => {
     } catch (err) {
         res.status(400).send(err);
     }
+});
+router.get('/allgames', async (req, res) => {
+    try {
+        const games = await Gameinfo.find();
+        res.send(games);
+    } catch (err) {
+        res.status(400).send(err);
+    }
+
 });
 router.get('/:childId/gamesplayed',auth, async (req, res) => {
     const { childId } = req.params;

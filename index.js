@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const caretakerRoutes = require('./routes/caretakerRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const parentRoutes = require('./routes/parentRoutes');
+const Gameinfo = require('./models/Gameinfo');
 const app = express();
 const PORT = 5000;
 
@@ -31,8 +32,8 @@ app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
 });
 app.post('/createcentre',async(req,res) => {
-    const {name,centreId,centreid} = req.body;
-    const centrecreate = new centre({name,centreId,centreid});
+    const {name,centreId,centerid} = req.body;
+    const centrecreate = new centre({name,centreId,centerid});
     try{
         const savedCentre = await centrecreate.save();
         res.send(savedCentre);
@@ -40,6 +41,18 @@ app.post('/createcentre',async(req,res) => {
     catch(err){
         res.status(400).send('Error in creating centre');
     }
+});
+app.post('/creategame',async(req,res) => {
+    const {gameId,gamename,gameauthor} = req.body;
+    const gamecreate = new Gameinfo({gameId,gamename,gameauthor});
+    try{
+        const savedGame = await gamecreate.save();
+        res.send(savedGame);
+    }
+    catch(err){
+        res.status(400).send('Error in creating game');
+    }
+
 });
 app.get('/*' , (req,res) => {
     res.send('You cannot access this page!');
