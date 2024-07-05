@@ -22,6 +22,16 @@ router.get('/allchildren',auth, async (req, res) => {
         res.status(400).send(err);
     }
 });
+
+router.get('/allcentres',auth, async (req, res) => {
+    try {
+        const centres = await Centre.find();
+        res.send(centres);
+    } catch (err) {
+        res.status(400).send(err);
+    }
+});
+
 router.get("/alldoctors",auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
     try {
