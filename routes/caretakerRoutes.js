@@ -31,22 +31,19 @@ router.put('/:gameId/:childId', auth, async (req, res) => {
         // Verify that the child is assigned to the caretaker
         const child = await Child.findById(childId);
         if (!child) return res.status(404).send('Child not found');
-        if (req.user.role !== 'caretaker' || child.caretakerId.toString() !== req.user._id.toString()) {
+        if (child.caretakerId.toString() !== req.user._id.toString()) {
             return res.status(403).send('Different caretaker assigned to the child');
         }
 
-        // Create a game entry
-
+        // Create a new game entry regardless of whether one already exists
         const game = new Game({ gameId, childId, tries, timer, status });
         await game.save();
 
         // If the game status is completed, update the corresponding game status in the child's document
         if (status) {
-            // Add the gameId to the gamesCompleted array if it's not already there
-            if (!child.gamesCompleted.includes(gameId)) {
-                child.gamesCompleted.push(gameId);
-                await child.save();
-            }
+            // Always add the gameId to the gamesCompleted array
+            child.gamesCompleted.push(gameId);
+            await child.save();
         } else {
             // Remove the gameId from the gamesCompleted array if the game is not completed
             const index = child.gamesCompleted.indexOf(gameId);
@@ -61,6 +58,7 @@ router.put('/:gameId/:childId', auth, async (req, res) => {
         res.status(400).send(err);
     }
 });
+
 router.post('/sendgamedata',async (req,res)=>{
     const {gameId,tries,timer,status,childId} = req.body;
     try{
