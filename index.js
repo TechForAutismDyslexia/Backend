@@ -34,17 +34,17 @@ app.use('/api/userfeedback',userfeedback);
 app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
 });
-app.post('/createcentre',async(req,res) => {
-    const {name,centreId,centerid} = req.body;
-    const centrecreate = new centre({name,centreId,centerid});
-    try{
-        const savedCentre = await centrecreate.save();
-        res.send(savedCentre);
-    }
-    catch(err){
-        res.status(400).send('Error in creating centre');
-    }
-});
+// app.post('/createcentre',async(req,res) => {
+//     const {name,centreId,centerid} = req.body;
+//     const centrecreate = new centre({name,centreId,centerid});
+//     try{
+//         const savedCentre = await centrecreate.save();
+//         res.send(savedCentre);
+//     }
+//     catch(err){
+//         res.status(400).send('Error in creating centre');
+//     }
+// });
 app.post('/creategame',async(req,res) => {
     const {gameId,gamename,gameauthor} = req.body;
     const gamecreate = new Gameinfo({gameId,gamename,gameauthor});
