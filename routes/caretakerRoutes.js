@@ -35,16 +35,9 @@ router.put('/:gameId/:childId', auth, async (req, res) => {
             return res.status(403).send('Different caretaker assigned to the child');
         }
 
-        // Create or update a game entry
-        let game = await Game.findOne({ gameId, childId });
-        if (!game) {
-            game = new Game({ gameId, childId, tries, timer, status });
-        } else {
-            game.tries = tries;
-            game.timer = timer;
-            game.status = status;
-        }
+        // Create a game entry
 
+        const game = new Game({ gameId, childId, tries, timer, status });
         await game.save();
 
         // If the game status is completed, update the corresponding game status in the child's document
