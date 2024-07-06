@@ -21,8 +21,8 @@ router.get('/assigned', auth, async (req, res) => {
 // Create or Update game for a child
 router.put('/:gameId/:childId', auth, async (req, res) => {
     if (req.user.role !== 'caretaker') return res.status(403).send('Access Denied');
-    const { gameId, tries, timer, status } = req.body;
-    const { childId } = req.params;
+    const { tries, timer, status } = req.body;
+    const { gameId, childId } = req.params;
 
     // Validate childId
     if (!childId) return res.status(400).send('Child ID is required');
