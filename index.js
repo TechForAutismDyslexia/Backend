@@ -18,14 +18,14 @@ const PORT = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 // Database connection
-mongoose.connect('mongodb+srv://shivasaicharandodda:9nnaypS3Um6Z6eMU@cluster.47f8iht.mongodb.net/tfad', { useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://tadrw:tad12345@cluster0.shaeuvf.mongodb.net/tfad?retryWrites=true&w=majority&appName=Cluster0', { useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/data', dataRoutes);
-app.use('/api/admin',adminRoutes);
+app.use('/api/admin',adminRoutes);  
 app.use('/api/caretaker',caretakerRoutes);
 app.use('/api/doctor',doctorRoutes);
 app.use('/api/parent',parentRoutes);
