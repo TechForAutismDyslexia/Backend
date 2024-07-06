@@ -10,7 +10,7 @@ router.post('/register', async (req, res) => {
   const role = 'parent';
   //check if user already exists
   const user = await User.findOne({ username});
-  if (user) return res.status(400).send('User already exists');
+  if (user) return res.status(401).send('User already exists');
   const hashedPassword = await bcrypt.hash(password, 10);
   const users = new User({ username, password: hashedPassword, role,name,mobilenumber,email });
 
@@ -35,4 +35,5 @@ router.post('/login', async (req, res) => {
   const token = jwt.sign({ id: user._id, role : user.role }, '8328211811',{expiresIn: '1h'});
   res.header('Authorization', token).send(token);
 });
+
 module.exports = router;
