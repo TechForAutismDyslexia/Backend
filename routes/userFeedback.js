@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const UserFeedback = require('../models/UserFeedback');
-const router = express.router();
+const router = express.Router();
 
 
 router.post('/', async (req, res) => {
