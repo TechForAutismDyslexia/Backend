@@ -81,4 +81,17 @@ router.get('/feedback/:childId', auth, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+//get details of the child
+router.get('/child/:childId', auth, async (req, res) => {
+    const {childId} = req.params;
+    if (!childId) return res.status(400).send('Child ID is required');
+    try {
+        const child = await Child.findById(childId);
+        if (!child) return res.status(404).send('Child not found');
+        res.status(200).send(child);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
 module.exports = router;
