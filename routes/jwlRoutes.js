@@ -345,11 +345,17 @@ router.post("/verify-otp", async (req, res) => {
 
 router.post('/feedback', async (req, res) => {
     const { name, email, feedback } = req.body;
-    const userfeedback = new jwlFeedback({ name, email, feedback });
+    const jwlUserFeedback = new jwlFeedback({ name, email, feedback });
     try {
-        const savedFeedback = await jwlFeedback.save();
-        res.send(savedFeedback);
+        const savedFeedback = await jwlUserFeedback.save();
+        return res.status(200).json({
+          success: true,
+          message: "Feedback Saved Successfully"
+        });
     } catch (err) {
-        res.status(400).send(err);
+      return res.status(400).json({
+        success: false,
+        message: "Feedback Not Saved"
+      });
     }
 });
