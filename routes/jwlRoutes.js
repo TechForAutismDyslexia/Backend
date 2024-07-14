@@ -1,4 +1,5 @@
 const jwlUser = require("../models/jwlUserSchema");
+const jwlFeedback = require('../models/jwlFeedback');
 const knowMore = require("../models/knowMoreSchema");
 const jwlauth = require("../middleware/jwlauth");
 const OTP = require("../models/otpSchema");
@@ -338,4 +339,17 @@ router.post("/verify-otp", async (req, res) => {
       message: "OTP Verification Failed",
     });
   }
+});
+
+
+
+router.post('/feedback', async (req, res) => {
+    const { name, email, feedback } = req.body;
+    const userfeedback = new jwlFeedback({ name, email, feedback });
+    try {
+        const savedFeedback = await jwlFeedback.save();
+        res.send(savedFeedback);
+    } catch (err) {
+        res.status(400).send(err);
+    }
 });
