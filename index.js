@@ -10,6 +10,7 @@ const caretakerRoutes = require('./routes/caretakerRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const parentRoutes = require('./routes/parentRoutes');
 const userfeedback = require('./routes/userFeedback');
+const jwlapi = require('./routes/jwlRoutes');
 const Gameinfo = require('./models/Gameinfo');
 const app = express();
 const PORT = 5000;
@@ -30,6 +31,7 @@ app.use('/api/caretaker',caretakerRoutes);
 app.use('/api/doctor',doctorRoutes);
 app.use('/api/parent',parentRoutes);
 app.use('/api/userfeedback',userfeedback);
+app.use('/api/jwl',jwlapi);
 
 app.get('/' , (req,res) => {
     res.send('Hello JoywithLearning!');
