@@ -13,7 +13,6 @@ const upload = multer({
   storage: multer.memoryStorage(),
 });
 const { BlobServiceClient } = require("@azure/storage-blob");
-const jwlauth = require("../middleware/jwlauth");
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
