@@ -140,7 +140,7 @@ router.post("/send-otp", async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await jwlUser.findOne({ otpEmail });
+    let existingUser = await jwlUser.findOne({ otpEmail });
     if (existingUser) {
       return res.status(400).json({
         success: false,
