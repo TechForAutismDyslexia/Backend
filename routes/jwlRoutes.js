@@ -176,10 +176,10 @@ router.post("/send-otp", async (req, res) => {
     const otpPayload = { email: otpEmail, otp };
     const otpBody = await OTP.create(otpPayload);
 
-    console.log(
-      process.env.NODEMAILER_AUTH_USER,
-      process.env.NODEMAILER_AUTH_PASSWORD
-    );
+    // console.log(
+    //   process.env.NODEMAILER_AUTH_USER,
+    //   process.env.NODEMAILER_AUTH_PASSWORD
+    // );
 
     // Send OTP via email
     const transporter = nodemailer.createTransport({
