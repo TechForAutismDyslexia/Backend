@@ -4,23 +4,22 @@ const knowMore = require("../models/knowMoreSchema");
 const jwlauth = require("../middleware/jwlauth");
 const OTP = require("../models/otpSchema");
 const jwt = require("jsonwebtoken");
+const fileUpload = require('express-fileupload');
 const express = require("express");
 const router = express.Router();
 require("dotenv").config();
 const otpGenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
-const upload = multer({
-  storage: multer.memoryStorage(),
-});
+
+router.use(fileUpload());
 const { BlobServiceClient } = require("@azure/storage-blob");
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-router.post("/enquire", jwlauth, upload.single("video"), async (req, res) => {
+router.post("/enquire", jwlauth, async (req, res) => {
   try {
+    console.log("hello")
     // Get input data
-    const { storedData } = req.body;
-    console.log(storedData);
     const {
       childName,
       childAge,
@@ -28,7 +27,9 @@ router.post("/enquire", jwlauth, upload.single("video"), async (req, res) => {
       parentName,
       parentPhoneNo,
       parentEmail,
-    } = JSON.parse(storedData);
+    } = req.body;
+
+    console.log(childAge);
 
     // Check if all details are provided
     if (
@@ -37,7 +38,7 @@ router.post("/enquire", jwlauth, upload.single("video"), async (req, res) => {
       !childGender ||
       !parentName ||
       !parentPhoneNo ||
-      !parentEmail
+      !parentEmail 
     ) {
       return res.status(403).send({
         success: false,
@@ -64,9 +65,8 @@ router.post("/enquire", jwlauth, upload.single("video"), async (req, res) => {
       childGender,
     });
 
-    await OTP.deleteMany({ email: parentEmail });
-
     try {
+      const video = req.files.video;
       const blobServiceClient = BlobServiceClient.fromConnectionString(
         "DefaultEndpointsProtocol=https;AccountName=kmpvr;AccountKey=E4n9UoVMQTJviH8sEjTBO8tk5DwHpd2QuMWE+buz/wSzDBT5m4NrZ/DSC8O975eyY28xyun7zaol+AStv4nx5w==;EndpointSuffix=core.windows.net"
       );
@@ -76,17 +76,17 @@ router.post("/enquire", jwlauth, upload.single("video"), async (req, res) => {
       const blobName = `${parentEmail}`;
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-      await blockBlobClient.uploadData(req.file.buffer, {
-        blobHTTPHeaders: { blobContentType: req.file.mimetype },
+      await blockBlobClient.uploadData(video.data, {
+        blobHTTPHeaders: { blobContentType: video.mimetype },
       });
 
       const videoUrl = blockBlobClient.url;
-
+      console.log("video uploaded:", videoUrl);
       // Send Success Message via email
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
-        secure: true, // Use `true` for port 465, `false` for all other ports
+        secure: true, // Use true for port 465, false for all other ports
         auth: {
           user: "kmpvr2.0@gmail.com",
           pass: "ojqmczhvzldnbbzv",
@@ -102,108 +102,22 @@ router.post("/enquire", jwlauth, upload.single("video"), async (req, res) => {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
+          console.log(error);
           return res.status(500).send("Error sending OTP");
         }
-        return res.status(200).json({
-          success: true,
-          message: "Video Uploaded Successfully, Success Email sent",
-        });
-      });
-    } catch (err) {
-      res.status(500).json({ success: false, error: err.message });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "User Enquiry failed",
-    });
-  }
-});
-
-router.post("/know-more", jwlauth, async (req, res) => {
-  try {
-    const {
-      childName,
-      childAge,
-      childGender,
-      parentName,
-      parentPhoneNo,
-      parentEmail,
-      video1,
-      video2,
-      video3,
-    } = req.body;
-
-    // Check if all details are provided
-    if (
-      !childName ||
-      !childAge ||
-      !childGender ||
-      !parentName ||
-      !parentPhoneNo ||
-      !parentEmail
-    ) {
-      return res.status(403).send({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
-    // Check if user already exists
-    const existingUser = await knowMore.findOne({ parentEmail });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists",
-      });
-    }
-
-    // Create user
-    const newUser = await knowMore.create({
-      childName,
-      childAge,
-      parentName,
-      parentEmail,
-      parentPhoneNo,
-      childGender,
-      video1,
-      video2,
-      video3,
-    });
-
-    await OTP.deleteMany({ email: parentEmail });
-
-    try {
-      // Send Success Message via email
-      const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true, // Use `true` for port 465, `false` for all other ports
-        auth: {
-          user: "kmpvr2.0@gmail.com",
-          pass: "ojqmczhvzldnbbzv",
-        },
-      });
-
-      const mailOptions = {
-        from: `"TechForAutismAndDyslexia" <kmpvr2.0@gmail.com>`,
-        to: parentEmail,
-        subject: "Enquiry Success",
-        text: `Your details are uploaded successfully. Our admin will contact you shortly . . .`,
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          return res.status(500).send("Error sending OTP");
-        }
+        console.log("Success Email sent: " + info.response);
         return res
           .status(200)
-          .json({ success: true, message: "Success Email sent" });
+          .json({
+            success: true,
+            message: "Video Uploaded Successfully, Success Email sent",
+          });
       });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
     }
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       success: false,
       message: "User Enquiry failed",
@@ -343,18 +257,20 @@ router.post("/verify-otp", async (req, res) => {
 
 
 router.post('/feedback', async (req, res) => {
-    const { name, email, feedback } = req.body;
-    const jwlUserFeedback = new jwlFeedback({ name, email, feedback });
-    try {
-        const savedFeedback = await jwlUserFeedback.save();
-        return res.status(200).json({
-          success: true,
-          message: "Feedback Saved Successfully"
-        });
-    } catch (err) {
-      return res.status(400).json({
-        success: false,
-        message: "Feedback Not Saved"
-      });
-    }
+  const { name, email, feedback } = req.body;
+  const jwlUserFeedback = new jwlFeedback({ name, email, feedback });
+  try {
+    const savedFeedback = await jwlUserFeedback.save();
+    return res.status(200).json({
+      success: true,
+      message: "Feedback Saved Successfully"
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: "Feedback Not Saved"
+    });
+  }
 });
+
+module.exports = router;
