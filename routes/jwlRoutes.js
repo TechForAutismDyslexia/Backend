@@ -258,7 +258,14 @@ router.post("/verify-otp", async (req, res) => {
 
 router.post('/feedback', async (req, res) => {
   const { name, email, feedback } = req.body;
-  const jwlUserFeedback = new jwlFeedback({ name, email, feedback });
+  const existingUser = await jwlFeedback.findOne({ parentEmail });
+  if (existingUser) {
+    return res.status(400).json({
+      success: false,
+      message: "User already exists",
+    });
+  }
+  const jwlUserFeedback = await jwlFeedback.create({ name, email, feedback });
   try {
     const savedFeedback = await jwlUserFeedback.save();
     return res.status(200).json({
