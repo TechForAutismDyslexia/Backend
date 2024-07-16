@@ -5,4 +5,4 @@ const jwlFeedback = new Schema({
     email : { type: String, required: true },
     feedback: { type: String, required: true }
 })
-module.exports = mongoose.models.UserFeedback || mongoose.model('UserFeedback', jwlFeedback);
+module.exports = mongoose.models.jwlUserFeedback || mongoose.model('jwlUserFeedback', jwlFeedback);

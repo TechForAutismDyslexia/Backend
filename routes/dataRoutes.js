@@ -10,7 +10,6 @@ const router = express.Router();
 
 router.get('/allchildren',auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
-    console.log(req.user._id);
     const userdata = await User.findById(req.user._id);
     const Maincentre = userdata.username;
     const centre = await Centre.findOne({name:Maincentre});

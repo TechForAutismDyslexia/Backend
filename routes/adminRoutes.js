@@ -84,7 +84,6 @@ router.get("/gamedetails/:gameid", auth, async (req, res) => {
         //get child details from childid fetched from games
         fetchchildId = games.map((game) => game.childId);
         const children = await Child.find({ _id: fetchchildId, centreId: centre });
-        console.log(children);
         res.send(children);
     }
     catch (err) {

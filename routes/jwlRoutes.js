@@ -18,7 +18,6 @@ router.use(express.urlencoded({ extended: true }));
 
 router.post("/enquire", jwlauth, async (req, res) => {
   try {
-    console.log("hello")
     // Get input data
     const {
       childName,
@@ -29,7 +28,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
       parentEmail,
     } = req.body;
 
-    console.log(childAge);
 
     // Check if all details are provided
     if (
@@ -81,7 +79,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
       });
 
       const videoUrl = blockBlobClient.url;
-      console.log("video uploaded:", videoUrl);
       // Send Success Message via email
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -102,10 +99,8 @@ router.post("/enquire", jwlauth, async (req, res) => {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log(error);
           return res.status(500).send("Error sending OTP");
         }
-        console.log("Success Email sent: " + info.response);
         return res
           .status(200)
           .json({
@@ -117,7 +112,98 @@ router.post("/enquire", jwlauth, async (req, res) => {
       res.status(500).json({ success: false, error: err.message });
     }
   } catch (error) {
-    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "User Enquiry failed",
+    });
+  }
+});
+
+router.post("/know-more", jwlauth, async (req, res) => {
+  try {
+    const {
+      childName,
+      childAge,
+      childGender,
+      parentName,
+      parentPhoneNo,
+      parentEmail,
+      video1,
+      video2,
+      video3,
+    } = req.body;
+
+
+    // Check if all details are provided
+    if (
+      !childName ||
+      !childAge ||
+      !childGender ||
+      !parentName ||
+      !parentPhoneNo ||
+      !parentEmail
+    ) {
+      return res.status(403).send({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await knowMore.findOne({ parentEmail });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
+    // Create user
+    const newUser = await knowMore.create({
+      childName,
+      childAge,
+      parentName,
+      parentEmail,
+      parentPhoneNo,
+      childGender,
+      video1,
+      video2,
+      video3,
+    });
+
+    await OTP.deleteMany({ email: parentEmail });
+
+    try {
+      // Send Success Message via email
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // Use `true` for port 465, `false` for all other ports
+        auth: {
+          user: "kmpvr2.0@gmail.com",
+          pass: "ojqmczhvzldnbbzv",
+        },
+      });
+
+      const mailOptions = {
+        from: `"TechForAutismAndDyslexia" <kmpvr2.0@gmail.com>`,
+        to: parentEmail,
+        subject: "Enquiry Success",
+        text: `Your details are uploaded successfully. Our admin will contact you shortly . . .`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return res.status(500).send("Error sending OTP");
+        }
+        return res
+          .status(200)
+          .json({ success: true, message: "Success Email sent" });
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: "User Enquiry failed",
@@ -126,7 +212,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
 });
 
 router.post("/send-otp", async (req, res) => {
-  console.log(req.body);
   try {
     // Get input data
     const { otpEmail } = req.body;
@@ -176,10 +261,7 @@ router.post("/send-otp", async (req, res) => {
     const otpPayload = { email: otpEmail, otp };
     const otpBody = await OTP.create(otpPayload);
 
-    // console.log(
-    //   process.env.NODEMAILER_AUTH_USER,
-    //   process.env.NODEMAILER_AUTH_PASSWORD
-    // );
+    
 
     // Send OTP via email
     const transporter = nodemailer.createTransport({
@@ -258,9 +340,9 @@ router.post("/verify-otp", async (req, res) => {
 
 router.post('/feedback', async (req, res) => {
   const { name, email, feedback } = req.body;
-  const existingUser = await jwlFeedback.findOne({ parentEmail });
+  const existingUser = await jwlFeedback.findOne({ email });
   if (existingUser) {
-    return res.status(400).json({
+    return res.json({
       success: false,
       message: "User already exists",
     });
