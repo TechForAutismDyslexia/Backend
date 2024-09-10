@@ -66,9 +66,9 @@ router.post("/enquire", jwlauth, async (req, res) => {
     try {
       const video = req.files.video;
       const blobServiceClient = BlobServiceClient.fromConnectionString(
-        "DefaultEndpointsProtocol=https;AccountName=kmpvr;AccountKey=E4n9UoVMQTJviH8sEjTBO8tk5DwHpd2QuMWE+buz/wSzDBT5m4NrZ/DSC8O975eyY28xyun7zaol+AStv4nx5w==;EndpointSuffix=core.windows.net"
+        "DefaultEndpointsProtocol=https;AccountName=kmpvr;AccountKey=" + process.env.AZURE_ACCOUNT_KEY + "==;EndpointSuffix=core.windows.net"
       );
-      const containerName = "test1";
+      const containerName = process.env.AZURE_CONTAINER_NAME;
       const containerClient =
         blobServiceClient.getContainerClient(containerName);
       const blobName = `${parentEmail}`;
@@ -86,7 +86,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
         secure: true, // Use true for port 465, false for all other ports
         auth: {
           user: "kmpvr2.0@gmail.com",
-          pass: "ojqmczhvzldnbbzv",
+          pass: process.env.NODEMAILER_PASSWORD,
         },
       });
 
@@ -181,7 +181,7 @@ router.post("/know-more", jwlauth, async (req, res) => {
         secure: true, // Use `true` for port 465, `false` for all other ports
         auth: {
           user: "kmpvr2.0@gmail.com",
-          pass: "ojqmczhvzldnbbzv",
+          pass: process.env.NODEMAILER_PASSWORD,
         },
       });
 
@@ -270,7 +270,7 @@ router.post("/send-otp", async (req, res) => {
       secure: true, // Use `true` for port 465, `false` for all other ports
       auth: {
         user: "kmpvr2.0@gmail.com",
-        pass: "ojqmczhvzldnbbzv",
+        pass: process.env.NODEMAILER_PASSWORD,
       },
     });
 
@@ -319,7 +319,7 @@ router.post("/verify-otp", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ email: email }, "jwltad", {
+    const token = jwt.sign({ email: email }, process.env.JWT_EMAIL_SECRET, {
       expiresIn: "1h",
     });
 

@@ -14,12 +14,13 @@ const jwlapi = require('./routes/jwlRoutes');
 const Gameinfo = require('./models/Gameinfo');
 const app = express();
 const PORT = 4000;
+require('dotenv').config();
 
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
 // Database connection
-mongoose.connect('mongodb+srv://tadrw:tad12345@cluster0.shaeuvf.mongodb.net/tfad?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 

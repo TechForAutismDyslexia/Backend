@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const router = express.Router();
 const auth = require('../middleware/auth');
+require('dotenv').config();
 // Register
 router.post('/register', async (req, res) => {
   const { username, password, name, mobilenumber,email} = req.body;
@@ -31,7 +32,7 @@ router.post('/login', async (req, res) => {
   const validPass = await bcrypt.compare(password, user.password);
   if (!validPass) return res.status(400).send('Invalid password');
 
-  const token = jwt.sign({ id: user._id, role : user.role }, '8328211811',{expiresIn: '1h'});
+  const token = jwt.sign({ id: user._id, role : user.role }, process.env.JWT_SECRET,{expiresIn: '1h'});
   res.header('Authorization', token).send(token);
 });
 
