@@ -82,7 +82,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
       });
 
       const videoUrl = blockBlobClient.url;
-      // Send Success Message via email
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
