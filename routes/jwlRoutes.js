@@ -324,7 +324,7 @@ router.post("/verify-otp", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ email: email }, process.env.JWT_EMAIL_SECRET, {
+    const token = jwt.sign({ email: email }, process.env.JWL_SECRET, {
       expiresIn: "1h",
     });
 
