@@ -69,7 +69,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
     try {
       const video = req.files.video;
       const blobServiceClient = BlobServiceClient.fromConnectionString(
-        process.env.AZURE_ACCOUNT_KEY_1+"=https;AccountName=" + process.env.AZURE_ACCOUNT_NAME + ";AccountKey=" + process.env.AZURE_ACCOUNT_KEY_2 + "==;" + process.env.AZURE_ACCOUNT_KEY_3 + "=core.windows.net"
+        process.env.AZURE_ACCOUNT_KEY
       );
       const containerName = "test1";
       const containerClient =
