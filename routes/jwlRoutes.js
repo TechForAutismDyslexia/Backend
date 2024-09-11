@@ -69,7 +69,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
     try {
       const video = req.files.video;
       const blobServiceClient = BlobServiceClient.fromConnectionString(
-        "DefaultEndpointsProtocol=https;AccountName=kmpvr;AccountKey=E4n9UoVMQTJviH8sEjTBO8tk5DwHpd2QuMWE+buz/wSzDBT5m4NrZ/DSC8O975eyY28xyun7zaol+AStv4nx5w==;EndpointSuffix=core.windows.net"
+        "DefaultEndpointsProtocol=https;AccountName=" + process.env.AZURE_ACCOUNT_NAME + ";AccountKey=" + process.env.AZURE_ACCOUNT_KEY + "==;EndpointSuffix=core.windows.net"
       );
       const containerName = "test1";
       const containerClient =
@@ -88,8 +88,8 @@ router.post("/enquire", jwlauth, async (req, res) => {
         port: 465,
         secure: true, // Use true for port 465, false for all other ports
         auth: {
-          user: "kmpvr2.0@gmail.com",
-          pass: "ojqmczhvzldnbbzv",
+          user: process.env.NODEMAILER_USER,
+          pass: process.env.NODEMAILER_PASS,
         },
       });
 
@@ -186,8 +186,8 @@ router.post("/know-more", jwlauth, async (req, res) => {
         port: 465,
         secure: true, // Use `true` for port 465, `false` for all other ports
         auth: {
-          user: "kmpvr2.0@gmail.com",
-          pass: "ojqmczhvzldnbbzv",
+          user: process.env.NODEMAILER_USER,
+          pass: process.env.NODEMAILER_PASS,
         },
       });
 
@@ -275,8 +275,8 @@ router.post("/send-otp", async (req, res) => {
       port: 465,
       secure: true, // Use `true` for port 465, `false` for all other ports
       auth: {
-        user: "kmpvr2.0@gmail.com",
-        pass: "ojqmczhvzldnbbzv",
+        user: process.env.NODEMAILER_USER,
+        pass: process.env.NODEMAILER_PASS,
       },
     });
 
