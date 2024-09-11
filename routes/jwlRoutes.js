@@ -71,7 +71,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
       const blobServiceClient = BlobServiceClient.fromConnectionString(
         process.env.AZURE_ACCOUNT_KEY
       );
-      const containerName = "test1";
+      const containerName = process.env.AZURE_CONTAINER_NAME;
       const containerClient =
         blobServiceClient.getContainerClient(containerName);
       const blobName = `${parentEmail}`;
@@ -324,7 +324,7 @@ router.post("/verify-otp", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ email: email }, "jwltad", {
+    const token = jwt.sign({ email: email }, process.env.JWT_EMAIL_SECRET, {
       expiresIn: "1h",
     });
 

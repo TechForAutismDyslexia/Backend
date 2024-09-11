@@ -15,6 +15,7 @@ const Gameinfo = require('./models/Gameinfo');
 const app = express();
 const PORT = 4000;
 require('dotenv').config();
+
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
