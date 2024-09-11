@@ -26,6 +26,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
       parentName,
       parentPhoneNo,
       parentEmail,
+      preferredCenter
     } = req.body;
 
 
@@ -36,7 +37,8 @@ router.post("/enquire", jwlauth, async (req, res) => {
       !childGender ||
       !parentName ||
       !parentPhoneNo ||
-      !parentEmail 
+      !parentEmail ||
+      !preferredCenter
     ) {
       return res.status(403).send({
         success: false,
@@ -61,6 +63,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
       parentEmail,
       parentPhoneNo,
       childGender,
+      preferredCenter
     });
 
     try {
@@ -128,6 +131,7 @@ router.post("/know-more", jwlauth, async (req, res) => {
       parentName,
       parentPhoneNo,
       parentEmail,
+      preferredCenter,
       video1,
       video2,
       video3,
@@ -141,7 +145,8 @@ router.post("/know-more", jwlauth, async (req, res) => {
       !childGender ||
       !parentName ||
       !parentPhoneNo ||
-      !parentEmail
+      !parentEmail,
+      !preferredCenter
     ) {
       return res.status(403).send({
         success: false,
@@ -166,6 +171,7 @@ router.post("/know-more", jwlauth, async (req, res) => {
       parentEmail,
       parentPhoneNo,
       childGender,
+      preferredCenter,
       video1,
       video2,
       video3,

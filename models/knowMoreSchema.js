@@ -30,6 +30,11 @@ const knowMore = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  preferredCenter:{
+    type: String,
+    required: true,
+    trim: true,
+  },
   video1: {
     type: String,
     required: true,

@@ -25,11 +25,16 @@ const jwlUserSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  // childGender: {
-  //   type: String,
-  //   required: true,
-  //   trim: true,
-  // },
+  childGender: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  preferredCenter:{
+    type: String,
+    required: true,
+    trim: true,
+  },
   isVerified: {
     type: Boolean,
     required: true,
