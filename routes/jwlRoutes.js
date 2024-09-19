@@ -69,9 +69,9 @@ router.post("/enquire", jwlauth, async (req, res) => {
     try {
       const video = req.files.video;
       const blobServiceClient = BlobServiceClient.fromConnectionString(
-        process.env.AZURE_ACCOUNT_KEY
+        "DefaultEndpointsProtocol=https;AccountName=" + process.env.AZURE_ACCOUNT_NAME + ";AccountKey=" + process.env.AZURE_ACCOUNT_KEY + "==;EndpointSuffix=core.windows.net"
       );
-      const containerName = process.env.AZURE_CONTAINER_NAME;
+      const containerName = "test1";
       const containerClient =
         blobServiceClient.getContainerClient(containerName);
       const blobName = `${parentEmail}`;
@@ -82,6 +82,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
       });
 
       const videoUrl = blockBlobClient.url;
+      // Send Success Message via email
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
@@ -144,8 +145,11 @@ router.post("/know-more", jwlauth, async (req, res) => {
       !childGender ||
       !parentName ||
       !parentPhoneNo ||
-      !parentEmail,
-      !preferredCenter
+      !parentEmail ||
+      !preferredCenter ||
+      !video1 ||
+      !video2 ||
+      !video3
     ) {
       return res.status(403).send({
         success: false,
@@ -324,7 +328,7 @@ router.post("/verify-otp", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ email: email }, process.env.JWL_SECRET, {
+    const token = jwt.sign({ email: email }, "jwltad", {
       expiresIn: "1h",
     });
 
