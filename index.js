@@ -20,7 +20,7 @@ require('dotenv').config();
 app.use(bodyParser.json());
 app.use(cors());
 // Database connection
-mongoose.connect('mongodb+srv://tadrw:tad12345@cluster0.shaeuvf.mongodb.net/tfad')
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
