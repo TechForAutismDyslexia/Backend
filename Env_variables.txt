@@ -1,6 +1,0 @@
-MONGO_URI=mongodb+srv://tadrw:tad12345@cluster0.shaeuvf.mongodb.net/tfad
-JWT_SECRET=8328211811
-JWL_SECRET=jwltad
-AZURE_ACCOUNT_KEY=DefaultEndpointsProtocol=https;AccountName=kmpvr;AccountKey=E4n9UoVMQTJviH8sEjTBO8tk5DwHpd2QuMWE+buz/wSzDBT5m4NrZ/DSC8O975eyY28xyun7zaol+AStv4nx5w==;EndpointSuffix=core.windows.net
-NODEMAILER_USER=kmpvr2.0@gmail.com
-NODEMAILER_PASS=ojqmczhvzldnbbzv
