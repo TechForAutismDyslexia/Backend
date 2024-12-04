@@ -35,6 +35,17 @@ const jwlUserSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  videoCall:{
+    type: Boolean,
+    required: true,
+    trim: true,
+    default : false
+  },
+  checklist: {
+    type: Map, 
+    of: String, 
+    required: true,
+  },
   isVerified: {
     type: Boolean,
     required: true,

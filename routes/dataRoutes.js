@@ -31,10 +31,21 @@ router.get('/allcentres',auth, async (req, res) => {
     }
 });
 
-router.get("/alldoctors",auth, async (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).send('Access Denied');
+router.get("/alldoctors/:id?",auth, async (req, res) => {
+    if (req.user.role !== 'admin' && req.user.role !== 'parent') return res.status(403).send('Access Denied');
+    const {id }= req.params;
     try {
-        const doctors = await User.find({role: 'doctor'});
+        
+        let doctors;
+        if (id) {
+            
+            doctors = await User.findOne({ role: 'doctor', _id: id });
+            if (!doctors) return res.status(404).send("Doctor not found");
+        } else {
+            // If no ID is specified, find all doctors
+            doctors = await User.find({ role: 'doctor' });
+            
+        }
         res.send(doctors);
     } catch (err) {
         res.status(400).send(err);
@@ -49,7 +60,7 @@ router.get("/allcaretakers",auth, async (req, res) => {
         res.status(400).send(err);
     }
 });
-router.get('/allgames', async (req, res) => {
+router.get('/allgames', auth , async (req, res) => {
     try {
         const games = await Gameinfo.find();
         res.send(games);
@@ -92,4 +103,5 @@ router.get('/:childId', auth, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
 module.exports = router;

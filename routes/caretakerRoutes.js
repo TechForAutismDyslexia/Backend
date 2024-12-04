@@ -6,6 +6,7 @@ const Game = require('../models/GameStatus');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Gametrial = require('../models/Gametrial');
+const IEPDoctor = require('../models/IEPDoctor');
 // Get assigned children for caretaker
 router.get('/assigned', auth, async (req, res) => {
     if (req.user.role !== 'caretaker') return res.status(403).send('Access Denied');
@@ -18,7 +19,6 @@ router.get('/assigned', auth, async (req, res) => {
     }
 });
 
-// Create or Update game for a child
 router.put('/:gameId/:childId', auth, async (req, res) => {
     if (req.user.role !== 'caretaker') return res.status(403).send('Access Denied');
     const { tries, timer, status } = req.body;
@@ -93,4 +93,21 @@ router.put('/feedback/:childId', auth, async (req, res) => {
     }
 });
 
+
+
+
+router.get('/childIEP/:childId', async (req, res) => {
+
+    // We can add a check to ensure that both therapists and doctors can access this route
+    
+    const { childId } = req.params;
+    if (!childId) return res.status(400).send('Child ID is required');
+    try {
+        const IEP = await IEPDoctor.find({ childId });
+        res.send(IEP);
+    } catch (err) {
+        res.status(400).send(err);
+    }
+}
+);
 module.exports = router;

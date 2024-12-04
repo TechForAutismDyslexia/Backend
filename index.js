@@ -13,9 +13,10 @@ const userfeedback = require('./routes/userFeedback');
 const jwlapi = require('./routes/jwlRoutes');
 const Gameinfo = require('./models/Gameinfo');
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 require('dotenv').config();
 
+// Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -26,38 +27,28 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/data', dataRoutes);
-app.use('/api/admin',adminRoutes);  
+app.use('/api/admin',adminRoutes);
 app.use('/api/caretaker',caretakerRoutes);
 app.use('/api/doctor',doctorRoutes);
 app.use('/api/parent',parentRoutes);
 app.use('/api/userfeedback',userfeedback);
 app.use('/api/jwl',jwlapi);
 
-app.get('/' , (req,res) => {
+app.get('/api' , (req,res) => {
     res.send('Hello JoywithLearning!');
 });
-// app.post('/createcentre',async(req,res) => {
-//     const {name,centreId,centerid} = req.body;
-//     const centrecreate = new centre({name,centreId,centerid});
-//     try{
-//         const savedCentre = await centrecreate.save();
-//         res.send(savedCentre);
-//     }
-//     catch(err){
-//         res.status(400).send('Error in creating centre');
-//     }
-// });
-app.post('/creategame',async(req,res) => {
-    const {gameId,gamename,gameauthor} = req.body;
-    const gamecreate = new Gameinfo({gameId,gamename,gameauthor});
-    try{
-        const savedGame = await gamecreate.save();
-        res.send(savedGame);
-    }
-    catch(err){
-        res.status(400).send('Error in creating game');
-    }
-
+app.get('/api/testing' , (req,res) => {
+    res.send('API is working!');
+}
+);
+app.get('/api/get-test-video', (req, res) => {
+    const videoPath = "/home/uploads/jwluploads/pvrkmsbunny.mp4";
+    res.sendFile(videoPath, (err) => {
+        if(err) {
+            console.error('Error sending video:', err);
+            res.status(500).send('Error sending video');
+        }
+    });
 });
 app.get('/*' , (req,res) => {
     res.send('You cannot access this page!');

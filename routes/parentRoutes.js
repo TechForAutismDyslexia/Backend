@@ -43,5 +43,25 @@ router.get('/children', auth, async (req, res) => {
     }
   });
 
+  router.get('/getConsultations', auth, async (req, res) => {
+    const parentID = req.user._id;
+    if (req.user.role !== 'parent') {
+        return res.status(403).send('Access Denied');
+    }
+
+    try {
+        
+        const consultations = await Consultation.find({ parentID: parentID });
+        if (!consultations.length) {
+            return res.status(404).send('No consultations found for this parent on this date');
+        }
+        console.log(consultations);
+        res.send(consultations);
+
+    } catch (err) {
+        console.error(err); // Log error for debugging
+        res.status(400).send(err.message); // Send error message to the client
+    }
+});
 
 module.exports = router;
