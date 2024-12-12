@@ -115,16 +115,66 @@ router.get("/gametable/:childId", auth, async (req, res) => {
   }
 });
 
+router.post("/bookAppointment", auth, async (req, res) => {
+  if (req.user.role !== "admin" && req.user.role !== "parent") {
+    return res.status(403).send("Access Denied");
+  }
 
-router.post(
-  "/bookAppointment",
-  auth,
-  async (req, res) => {
-    if (req.user.role !== "admin" && req.user.role !== "parent") {
-      return res.status(403).send("Access Denied");
+  const {
+    email,
+    parentName,
+    parentId,
+    childName,
+    dob,
+    appointmentDate,
+    gender,
+    parentPhoneNo,
+    alternativeNumber,
+    address,
+    schoolName,
+    classGrade,
+    schoolBoard,
+    consultationType,
+    referredBy,
+    childConcerns,
+    branch,
+    doctorId,
+    time,
+  } = req.body;
+
+  try {
+    const sanitizedEmail = email.split("@")[0];
+    const pdfBuffer = req.files.pdf.data;
+    const uploadDir = "/home/uploads/childReports/";
+    const filePath = path.join(uploadDir, `${sanitizedEmail}_report.pdf`);
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
+    fs.writeFile(filePath, pdfBuffer, (err) => {
+      if (err) {
+        console.error("Error saving file:", err);
+        return res.status(500).send({
+          success: false,
+          message: "Failed to save the file.",
+        });
+      }
+      return res.status(200).send({
+        success: true,
+        message: "File uploaded successfully.",
+      });
+    });
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    return res.status(500).send({
+      success: false,
+      message: "Failed to upload file.",
+    });
+  }
 
-    const {
+  const status = req.user.role === "admin" ? "confirmed" : "pending";
+
+  try {
+    const appointment = new Appointment({
       email,
       parentName,
       parentId,
@@ -142,133 +192,78 @@ router.post(
       referredBy,
       childConcerns,
       branch,
-      doctorId,
+      // medicalReports: `https://${connectionString.split(";")[1].split("=")[1]}.blob.core.windows.net/${containerName}/${blobName}`,
       time,
-    } = req.body;
+      doctorId,
+      status,
+    });
 
-    try {
-      const sanitizedEmail = email.split("@")[0];
-      const pdfBuffer = req.files.pdf.data;
-      const uploadDir = "/home/uploads/childReports/";
-      const filePath = path.join(uploadDir, `${sanitizedEmail}_report.pdf`);
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      fs.writeFile(filePath, pdfBuffer, (err) => {
-        if (err) {
-          console.error("Error saving file:", err);
-          return res.status(500).send({
-            success: false,
-            message: "Failed to save the file.",
-          });
-        }
-        return res.status(200).send({
-          success: true,
-          message: "File uploaded successfully.",
+    await appointment.save();
+
+    if (status === "confirmed") {
+      const existingConsultation = await Consultation.findOne({
+        doctorID: doctorId,
+        parentID: null,
+        "slots.date": appointmentDate,
+      });
+
+      if (existingConsultation) {
+        existingConsultation.slots.push({
+          date: appointmentDate,
+          time,
+          booked: true,
+          appointmentID: appointment._id,
         });
-      });
-    } catch (err) {
-      console.error("Unexpected error:", err);
-      return res.status(500).send({
-        success: false,
-        message: "Failed to upload file.",
-      });
-    }
-
-    const status = req.user.role === "admin" ? "confirmed" : "pending";
-
-    try {
-      const appointment = new Appointment({
-        email,
-        parentName,
-        parentId,
-        childName,
-        dob,
-        appointmentDate,
-        gender,
-        parentPhoneNo,
-        alternativeNumber,
-        address,
-        schoolName,
-        classGrade,
-        schoolBoard,
-        consultationType,
-        referredBy,
-        childConcerns,
-        branch,
-        // medicalReports: `https://${connectionString.split(";")[1].split("=")[1]}.blob.core.windows.net/${containerName}/${blobName}`,
-        time,
-        doctorId,
-        status,
-      });
-
-      await appointment.save();
-
-      if (status === "confirmed") {
-        const existingConsultation = await Consultation.findOne({
-          doctorID: doctorId,
-          parentID: null,
-          "slots.date": appointmentDate,
-        });
-
-        if (existingConsultation) {
-          existingConsultation.slots.push({
-            date: appointmentDate,
-            time,
-            booked: true,
-            appointmentID: appointment._id,
-          });
-          await existingConsultation.save();
-        } else {
-          const newConsultation = new Consultation({
-            doctorID: doctorId,
-            slots: [
-              {
-                date: appointmentDate,
-                time,
-                booked: true,
-                appointmentID: appointment._id,
-              },
-            ],
-          });
-          await newConsultation.save();
-        }
+        await existingConsultation.save();
       } else {
-        const mailsendresponse = sendmail(
-          email,
-          "Appointment Booking",
-          `Your Appointment booking request for ${appointmentDate} at ${time} has been sent to Admin. Please wait for confirmation.`
-        );
-        if (mailsendresponse === false) {
-          return res
-            .status(500)
-            .json({ success: false, message: "Error sending mail" });
-        }
+        const newConsultation = new Consultation({
+          doctorID: doctorId,
+          slots: [
+            {
+              date: appointmentDate,
+              time,
+              booked: true,
+              appointmentID: appointment._id,
+            },
+          ],
+        });
+        await newConsultation.save();
+      }
+    } else {
+      const mailsendresponse = sendmail(
+        email,
+        "Appointment Booking",
+        `Your Appointment booking request for ${appointmentDate} at ${time} has been sent to Admin. Please wait for confirmation.`
+      );
+      if (mailsendresponse === false) {
         return res
-          .status(200)
-          .send("Appointment booked, awaiting admin approval.");
+          .status(500)
+          .json({ success: false, message: "Error sending mail" });
       }
-      try {
-        const mailsendresponse = sendmail(
-          email,
-          "Appointment Booking",
-          `Your Appointment booking has been booked for ${appointmentDate} at ${time}. Please be 15mins prior to the Appointment time.`
-        );
-        if (mailsendresponse === false) {
-          return res
-            .status(500)
-            .json({ success: false, message: "Error sending mail" });
-        }
-        return res.status(200).send("Appointment booked successfully");
-      } catch (err) {
-        return res.status(500).send({ error: "Failed to send email" });
-      }
-    } catch (err) {
-      console.log(err);
-      res.status(400).send({ error: "Failed to book appointment" });
+      return res
+        .status(200)
+        .send("Appointment booked, awaiting admin approval.");
     }
+    try {
+      const mailsendresponse = sendmail(
+        email,
+        "Appointment Booking",
+        `Your Appointment booking has been booked for ${appointmentDate} at ${time}. Please be 15mins prior to the Appointment time.`
+      );
+      if (mailsendresponse === false) {
+        return res
+          .status(500)
+          .json({ success: false, message: "Error sending mail" });
+      }
+      return res.status(200).send("Appointment booked successfully");
+    } catch (err) {
+      return res.status(500).send({ error: "Failed to send email" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).send({ error: "Failed to book appointment" });
   }
-);
+});
 
 router.put("/verifyAppointment/:appointmentID", auth, async (req, res) => {
   if (req.user.role !== "admin") return res.status(403).send("Access Denied");
@@ -372,44 +367,44 @@ router.get("/getConsultations/:doctorID/:date", auth, async (req, res) => {
   }
 });
 
-router.get('/get-jwl-enquiries',auth, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+router.get("/get-jwl-enquiries", auth, async (req, res) => {
+  if (req.user.role !== "admin") return res.status(403).send("Access Denied");
 
   try {
-      const enquiries = await jwlUser.find({});
-      res.send(enquiries);
+    const enquiries = await jwlUser.find({});
+    res.send(enquiries);
   } catch (err) {
-      res.status(400).send(err);
+    res.status(400).send(err);
   }
-}
-);
+});
 
-router.get('/get-jwluser-video/:parentEmail',auth, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+router.get("/get-jwluser-video/:parentEmail", auth, async (req, res) => {
+  if (req.user.role !== "admin") return res.status(403).send("Access Denied");
 
   try {
-      const parentEmail = req.params.parentEmail;
-      const sanitizedEmail = parentEmail.split('@')[0];
-      const videoDir =  "/home/uploads/jwluploads/";
-      const videoPath = path.join(videoDir, `${sanitizedEmail}.mp4`);
-      res.sendFile(videoPath);;
+    const parentEmail = req.params.parentEmail;
+    const sanitizedEmail = parentEmail.split("@")[0];
+    const videoDir = "/home/uploads/jwluploads/";
+    const videoPath = path.join(videoDir, `${sanitizedEmail}.mp4`);
+    res.sendFile(videoPath);
   } catch (err) {
-      res.status(400).send(err);
+    res.status(400).send(err);
   }
-}
-);
+});
 
-router.delete('/delete-jwl-enquiry/:parentEmail',auth, async (req, res) => {
-  if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+router.delete("/delete-jwl-enquiry/:parentEmail", auth, async (req, res) => {
+  if (req.user.role !== "admin") return res.status(403).send("Access Denied");
 
   try {
-      const parentEmail = req.params.parentEmail;
-      const enquiry = await jwlUser.deleteOne({ parentEmail: parentEmail });;
-      res.status(200).send(enquiry);
+    const parentEmail = req.params.parentEmail;
+    const enquiry = await jwlUser.deleteOne({ parentEmail: parentEmail });
+    const sanitizedEmail = parentEmail.split("@")[0];
+    const videoPath = `/home/uploads/jwluploads/${sanitizedEmail}.mp4`;
+    fs.unlink(videoPath);
+    res.status(200).send(enquiry);
   } catch (err) {
-      console.log(err);
-      res.status(400).send(err);
+    console.log(err);
+    res.status(400).send(err);
   }
-}
-);
+});
 module.exports = router;
