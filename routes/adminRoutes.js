@@ -400,7 +400,13 @@ router.delete("/delete-jwl-enquiry/:parentEmail", auth, async (req, res) => {
     const enquiry = await jwlUser.deleteOne({ parentEmail: parentEmail });
     const sanitizedEmail = parentEmail.split("@")[0];
     const videoPath = `/home/uploads/jwluploads/${sanitizedEmail}.mp4`;
-    fs.unlink(videoPath);
+    fs.unlink(videoPath,(err) => {
+      if (err) {
+        // console.error('Error deleting the file:', err);
+      } else {
+        // console.log('File deleted successfully');
+      }
+    });
     res.status(200).send(enquiry);
   } catch (err) {
     console.log(err);
