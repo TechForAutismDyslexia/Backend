@@ -42,7 +42,7 @@ app.get('/api/testing' , (req,res) => {
 }
 );
 app.get('/api/get-test-video', (req, res) => {
-    const videoPath = "/home/uploads/jwluploads/pvrkmsbunny.mp4";
+    const videoPath = "/home/uploads/jwluploads/test.mp4";
     res.sendFile(videoPath, (err) => {
         if(err) {
             console.error('Error sending video:', err);

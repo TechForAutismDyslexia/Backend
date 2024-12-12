@@ -8,6 +8,7 @@ const Appointment = require("../models/Appointment");
 const Consultation = require("../models/Consultations");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const jwlUser = require("../models/jwlUserSchema");
 const path = require("path");
 const fs = require("fs");
 const sendmail = require("../middleware/mailUtility");
@@ -370,4 +371,45 @@ router.get("/getConsultations/:doctorID/:date", auth, async (req, res) => {
     res.status(400).send(err);
   }
 });
+
+router.get('/get-jwl-enquiries',auth, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+
+  try {
+      const enquiries = await jwlUser.find({});
+      res.send(enquiries);
+  } catch (err) {
+      res.status(400).send(err);
+  }
+}
+);
+
+router.get('/get-jwluser-video/:parentEmail',auth, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+
+  try {
+      const parentEmail = req.params.parentEmail;
+      const sanitizedEmail = parentEmail.split('@')[0];
+      const videoDir =  "/home/uploads/jwluploads/";
+      const videoPath = path.join(videoDir, `${sanitizedEmail}.mp4`);
+      res.sendFile(videoPath);;
+  } catch (err) {
+      res.status(400).send(err);
+  }
+}
+);
+
+router.delete('/delete-jwl-enquiry/:parentEmail',auth, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+
+  try {
+      const parentEmail = req.params.parentEmail;
+      const enquiry = await jwlUser.deleteOne({ parentEmail: parentEmail });;
+      res.status(200).send(enquiry);
+  } catch (err) {
+      console.log(err);
+      res.status(400).send(err);
+  }
+}
+);
 module.exports = router;
