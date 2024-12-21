@@ -143,6 +143,8 @@ router.post("/enquire", jwlauth, async (req, res) => {
 
     const checklist = JSON.parse(req.body.checklist);
 
+    console.log(req.body);
+
     // Check if all details are provided
     if (
       !childName ||
