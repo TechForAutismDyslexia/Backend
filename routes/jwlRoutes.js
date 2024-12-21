@@ -59,7 +59,7 @@ router.post("/send-otp", async (req, res) => {
       "Your OTP Code",
       `Your OTP code is ${otp}`
     );
-    // console.log(mailsendresponse);
+    console.log(mailsendresponse);
     if (mailsendresponse.success === false) {
       return res
         .status(500)
@@ -71,11 +71,11 @@ router.post("/send-otp", async (req, res) => {
       message:
         "Email Sent\nPlease Provide the OTP within 5 minutes otherwise OTP will be Invalid!!",
     });
-  } catch (error) {
+  } catch (err) {
     return res.status(500).json({
       success: false,
       message: "User Enquiry failed",
-      error: error,
+      error: err,
     });
   }
 });
