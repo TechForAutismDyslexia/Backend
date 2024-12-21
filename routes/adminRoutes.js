@@ -10,6 +10,7 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 const jwlUser = require("../models/jwlUserSchema");
 // const multer = require("multer");
+const sendmail = require("../middleware/mailUtility");
 const path = require("path");
 // router.use(express.json());
 const fileUpload = require("express-fileupload");

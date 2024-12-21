@@ -60,7 +60,7 @@ router.post("/send-otp", async (req, res) => {
       `Your OTP code is ${otp}`
     );
     // console.log(mailsendresponse);
-    if (mailsendresponse === false) {
+    if (mailsendresponse.success === false) {
       return res
         .status(500)
         .json({ success: false, message: "Error sending OTP" });
