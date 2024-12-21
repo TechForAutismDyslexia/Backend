@@ -9,16 +9,16 @@ const router = express.Router();
 require("dotenv").config();
 const otpGenerator = require("otp-generator");
 const sendmail = require("../middleware/mailUtility");
+const path = require("path");
+const fs = require("fs");
 
 router.use(fileUpload());
-const { BlobServiceClient } = require("@azure/storage-blob");
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
 router.post("/send-otp", async (req, res) => {
   try {
     const { otpEmail } = req.body;
-    
     if (!otpEmail) {
       return res.status(403).send({
         success: false,
@@ -59,18 +59,19 @@ router.post("/send-otp", async (req, res) => {
       "Your OTP Code",
       `Your OTP code is ${otp}`
     );
+    // console.log(mailsendresponse);
     if (mailsendresponse === false) {
       return res
         .status(500)
         .json({ success: false, message: "Error sending OTP" });
     }
+
     return res.status(200).json({
       success: true,
       message:
         "Email Sent\nPlease Provide the OTP within 5 minutes otherwise OTP will be Invalid!!",
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       success: false,
       message: "User Enquiry failed",
@@ -92,13 +93,13 @@ router.post("/verify-otp", async (req, res) => {
     const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
 
     if (response.length === 0 || otp !== response[0].otp) {
-      return res.json({
+      return res.status(200).json({
         success: false,
         message: "The OTP is not valid",
       });
     }
 
-    const token = jwt.sign({ email: email }, process.env.JWL_SECRET, {
+    const token = jwt.sign({ email: email }, "jwltad", {
       expiresIn: "1h",
     });
 
@@ -130,6 +131,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
     } = req.body;
 
     const checklist = JSON.parse(req.body.checklist);
+
     // Check if all details are provided
     if (
       !childName ||
@@ -150,7 +152,7 @@ router.post("/enquire", jwlauth, async (req, res) => {
     // Check if user already exists
     const existingUser = await jwlUser.findOne({ parentEmail });
     if (existingUser) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "User already exists",
       });
@@ -169,44 +171,39 @@ router.post("/enquire", jwlauth, async (req, res) => {
       checklist,
     });
 
-    try {
-      const video = req.files.video;
-      const blobServiceClient = BlobServiceClient.fromConnectionString(
-        "DefaultEndpointsProtocol=https;AccountName=" +
-          process.env.AZURE_ACCOUNT_NAME +
-          ";AccountKey=" +
-          process.env.AZURE_ACCOUNT_KEY +
-          "==;EndpointSuffix=core.windows.net"
-      );
-      const containerName = "test1";
-      const containerClient =
-        blobServiceClient.getContainerClient(containerName);
-      const blobName = `${parentEmail}`;
-      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    const file = req.files.video;
+    const sanitizedEmail = parentEmail.split("@")[0];
+    const uploadDir = "/home/uploads/jwluploads/";
+    const filePath = path.join(uploadDir, `${sanitizedEmail}.mp4`);
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
 
-      await blockBlobClient.uploadData(video.data, {
-        blobHTTPHeaders: { blobContentType: video.mimetype },
-      });
-
-      const videoUrl = blockBlobClient.url;
+    // Save file to the uploads folder
+    fs.writeFile(filePath, file.data, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send({
+          success: false,
+          message: "Failed to save the file.",
+        });
+      }
       // Send Success Message via email
       const mailsendres = sendmail(
         parentEmail,
         "Enquiry Success",
         `Your details are uploaded successfully. Our admin will contact you shortly . . .`
       );
-      if (mailsendres === false) {
+      if (mailsendres.success === false) {
         return res
           .status(500)
-          .json({ success: false, message: "Error sending OTP" });
+          .json({ success: false, message: "Error saving details" });
       }
       return res.status(200).json({
         success: true,
         message: "Video Uploaded Successfully, Success Email sent",
       });
-    } catch (err) {
-      res.status(500).json({ success: false, error: err.message });
-    }
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -221,12 +218,12 @@ router.post("/feedback", async (req, res) => {
   if (existingUser) {
     return res.json({
       success: false,
-      message: "User already exists",
+      message: "Feedback already given",
     });
   }
   const jwlUserFeedback = await jwlFeedback.create({ name, email, feedback });
   try {
-    const savedFeedback = await jwlUserFeedback.save();
+    await jwlUserFeedback.save();
     return res.status(200).json({
       success: true,
       message: "Feedback Saved Successfully",
