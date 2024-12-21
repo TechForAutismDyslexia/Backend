@@ -345,28 +345,27 @@ router.put(
   async (req, res) => {
     if (req.user.role !== "admin") return res.status(403).send("Access Denied");
     const { appointmentID } = req.params;
-
+    
     console.log(req.files.pdf.name);
     try {
       if (!req.files) {
         return res.status(400).send("Presription not uploaded");
       }
 
-      const pdfBuffer = req.files.pdf ? req.files.pdf.data : null;
-      const uploadDir = "/home/uploads/prescriptions/";
-      const filePath = path.join(uploadDir, `${req.files.pdf.name}.pdf`);
+    const pdfBuffer = req.files.pdf ? req.files.pdf.data : null;
+    const uploadDir = "/home/uploads/prescriptions/";
+    const filePath = path.join(uploadDir, `${req.files.pdf.name}.pdf`);
 
-
-      if (pdfBuffer) {
-        if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        await fs.promises.writeFile(filePath, pdfBuffer);
+    if (pdfBuffer) {
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
       }
+      await fs.promises.writeFile(filePath, pdfBuffer);
+    }
 
       const appointment = await Appointment.findByIdAndUpdate(
         appointmentID,
-        { prescription: filepath },
+        { prescription: filePath },
         { new: true }
       );
       if (!appointment) {
@@ -374,7 +373,7 @@ router.put(
       }
       res.status(200).send({
         message: "Prescription uploaded successfully",
-        prescription: filepath,
+        prescription: filePath,
         appointment,
       });
     } catch (error) {
@@ -399,7 +398,7 @@ router.get("/get-jwl-enquiries", auth, async (req, res) => {
   if (req.user.role !== "admin") return res.status(403).send("Access Denied");
 
   try {
-    const enquiries = await jwlUser.find({});
+    const enquiries = await jwlUser.find({}); 
     res.send(enquiries);
   } catch (err) {
     res.status(400).send(err);
