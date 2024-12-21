@@ -40,7 +40,6 @@ router.get("/alldoctors/:id?",auth, async (req, res) => {
         if (id) {
             
             doctors = await User.findOne({ role: 'doctor', _id: id });
-            console.log(doctors);
             
             if (!doctors) return res.status(404).send("Doctor not found");
         } else {

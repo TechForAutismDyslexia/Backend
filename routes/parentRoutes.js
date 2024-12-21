@@ -57,7 +57,6 @@ router.get('/children', auth, async (req, res) => {
         if (!consultations.length) {
             return res.status(404).send('No consultations found for this parent on this date');
         }
-        // console.log(consultations);
         res.send(consultations);
 
     } catch (err) {

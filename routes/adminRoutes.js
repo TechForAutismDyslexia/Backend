@@ -141,7 +141,6 @@ router.post(
   "/bookAppointment",
   auth,
   async (req, res) => {
-    console.log(req.body);
     if (req.user.role !== "admin" && req.user.role !== "parent") {
       return res.status(403).send("Access Denied");
     }
@@ -314,7 +313,6 @@ router.put("/verifyAppointment/:appointmentID", auth, async (req, res) => {
 
       try {
         temp = await newConsultation.save();
-        console.log("temp" + temp);
       } catch (e) {
         res.status(401).send({ message: "mongoDB error" });
       }

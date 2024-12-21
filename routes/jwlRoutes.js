@@ -25,7 +25,6 @@ router.post("/send-otp", async (req, res) => {
         message: "OTP Email is required",
       });
     }
-    console.log("otpEmail " + otpEmail);
 
     let existingUser = await jwlUser.findOne({ otpEmail });
     if (existingUser) {
@@ -35,16 +34,12 @@ router.post("/send-otp", async (req, res) => {
       });
     }
 
-    console.log("existingUser " + existingUser);
-
     // Generate OTP
     let otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
     });
-
-    console.log("otp " + otp);
 
     // Ensure OTP is unique (not strictly necessary for a one-time code)
     while (await OTP.findOne({ otp })) {
@@ -58,8 +53,6 @@ router.post("/send-otp", async (req, res) => {
     // Save OTP to database
     const otpPayload = { email: otpEmail, otp };
     const otpBody = await OTP.create(otpPayload);
-
-    console.log("otpBody " + otpBody);
 
     try{
       const mailsendresponse = sendmail(
@@ -142,8 +135,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
     } = req.body;
 
     const checklist = JSON.parse(req.body.checklist);
-
-    console.log(req.body);
 
     // Check if all details are provided
     if (
