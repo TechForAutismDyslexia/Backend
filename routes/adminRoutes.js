@@ -347,13 +347,13 @@ router.put(
     const { appointmentID } = req.params;
 
     try {
-      if (!req.file) {
+      if (!req.files) {
         return res.status(400).send("Presription not uploaded");
       }
 
     const pdfBuffer = req.files.pdf ? req.files.pdf.data : null;
     const uploadDir = "/home/uploads/prescriptions/";
-    const filePath = path.join(uploadDir, `${req.file.filename}.pdf`);
+    const filePath = path.join(uploadDir, `${req.files.pdf.filename}.pdf`);
 
     if (pdfBuffer) {
       if (!fs.existsSync(uploadDir)) {
@@ -365,7 +365,7 @@ router.put(
 
 
       
-      const filepath = `/home/uploads/${req.file.filename}`;
+      const filepath = `/home/uploads/prescriptions/${req.files.pdf.filename}`;
       const appointment = await Appointment.findByIdAndUpdate(
         appointmentID,
         { prescription: filepath },
