@@ -61,17 +61,19 @@ router.post("/send-otp", async (req, res) => {
 
     console.log("otpBody " + otpBody);
 
-    const mailsendresponse = sendmail(
-      otpEmail,
-      "Your OTP Code",
-      `Your OTP code is ${otp}`
-    );
-    console.log("mailsendresponse " + mailsendresponse);
-    
-    if (mailsendresponse.success === false) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Error sending OTP" });
+    try{
+      const mailsendresponse = sendmail(
+        otpEmail,
+        "Your OTP Code",
+        `Your OTP code is ${otp}`
+      );
+    }
+    catch(err){
+      return res.status(500).json({
+        success: false,
+        message: "Error sending OTP",
+        error: err,
+      });
     }
 
     return res.status(200).json({
