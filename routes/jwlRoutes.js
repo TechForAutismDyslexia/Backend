@@ -25,6 +25,7 @@ router.post("/send-otp", async (req, res) => {
         message: "OTP Email is required",
       });
     }
+    console.log(req.body);
 
     let existingUser = await jwlUser.findOne({ otpEmail });
     if (existingUser) {
@@ -33,6 +34,7 @@ router.post("/send-otp", async (req, res) => {
         message: "User already exists",
       });
     }
+    console.log(existingUser);
 
     // Generate OTP
     let otp = otpGenerator.generate(6, {
@@ -40,6 +42,8 @@ router.post("/send-otp", async (req, res) => {
       lowerCaseAlphabets: false,
       specialChars: false,
     });
+
+    console.log(otp);
 
     // Ensure OTP is unique (not strictly necessary for a one-time code)
     while (await OTP.findOne({ otp })) {
@@ -53,18 +57,19 @@ router.post("/send-otp", async (req, res) => {
     // Save OTP to database
     const otpPayload = { email: otpEmail, otp };
     const otpBody = await OTP.create(otpPayload);
-
+    console.log(otpBody);
     const mailsendresponse = sendmail(
       otpEmail,
       "Your OTP Code",
       `Your OTP code is ${otp}`
     );
-    // console.log(mailsendresponse);
+    console.log(mailsendresponse);
     if (mailsendresponse.success === false) {
       return res
         .status(500)
         .json({ success: false, message: "Error sending OTP" });
     }
+    console.log(mailsendresponse.success);
 
     return res.status(200).json({
       success: true,
