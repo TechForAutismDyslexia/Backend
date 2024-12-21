@@ -26,6 +26,7 @@ require('dotenv').config();
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.static('/home/uploads'));
 // Database connection
 mongoose.connect('mongodb+srv://tadrw:tad12345@cluster0.shaeuvf.mongodb.net/tfad')
   .then(() => console.log('MongoDB connected'))
