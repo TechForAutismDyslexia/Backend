@@ -184,7 +184,7 @@ router.post(
     } catch (err) {
       return res
         .status(500)
-        .send({ error: "Failed to check appointment availability" });
+        .send({ error: "Failed to check appointment availability" + err});
     }
 
     const sanitizedEmail = email.split("@")[0];
@@ -273,13 +273,13 @@ router.post(
           `Your Appointment booking has been booked for ${appointmentDate} at ${time}. Please be 15mins prior to the Appointment time.`
         );
       } catch (err) {
-        return res.status(500).send({ error: "Failed to send email" });
+        return res.status(500).send({ error: "Failed to send email" + err });
       }
 
       res.status(200).send("Appointment booked successfully");
     } catch (err) {
       console.log(err);
-      res.status(400).send({ error: "Failed to book appointment" });
+      res.status(400).send({ error: "Failed to book appointment" + err });
     }
   }
 );
