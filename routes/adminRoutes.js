@@ -345,7 +345,11 @@ router.put(
   async (req, res) => {
     if (req.user.role !== "admin") return res.status(403).send("Access Denied");
     const { appointmentID } = req.params;
-
+    
+    console.log(req.files);
+    console.log(req.files.pdf);
+    console.log(req.files.pdf.data);
+    console.log(req.files.pdf.filename);
     try {
       if (!req.files) {
         return res.status(400).send("Presription not uploaded");
@@ -355,6 +359,7 @@ router.put(
     const uploadDir = "/home/uploads/prescriptions/";
     const filePath = path.join(uploadDir, `${req.files.pdf.filename}.pdf`);
 
+
     if (pdfBuffer) {
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
@@ -363,8 +368,6 @@ router.put(
     }
 
 
-
-      
       const filepath = `/home/uploads/prescriptions/${req.files.pdf.filename}`;
       const appointment = await Appointment.findByIdAndUpdate(
         appointmentID,
