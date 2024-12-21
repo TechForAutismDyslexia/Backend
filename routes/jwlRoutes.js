@@ -207,11 +207,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
         "Enquiry Success",
         `Your details are uploaded successfully. Our admin will contact you shortly . . .`
       );
-      if (mailsendres.success === false) {
-        return res
-          .status(500)
-          .json({ success: false, message: "Error saving details" });
-      }
       return res.status(200).json({
         success: true,
         message: "Video Uploaded Successfully, Success Email sent",
