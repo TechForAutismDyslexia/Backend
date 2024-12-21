@@ -20,6 +20,7 @@ const sendmail = (parentEmail, subject, text) => {
 
   const mailres = transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
+      console.log("Utility " + error);
       return {
         success: false,
         message: error,
