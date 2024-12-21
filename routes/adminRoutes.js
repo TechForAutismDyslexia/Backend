@@ -380,7 +380,7 @@ router.put(
         appointment,
       });
     } catch (error) {
-      res.status(500).send("Internal server error");
+      res.status(500).send("Internal server error : " + error);
     }
   }
 );
