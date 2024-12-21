@@ -75,6 +75,7 @@ router.post("/send-otp", async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "User Enquiry failed",
+      error: error,
     });
   }
 });
