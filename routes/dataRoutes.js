@@ -5,7 +5,7 @@ const Games = require('../models/GameStatus');
 const auth = require('../middleware/auth');
 const Feedback = require('../models/Feedback');
 const Centre = require('../models/Centre');
-const Gameinfo = require('../models/Gameinfo');
+const Gameinfo = require('../models/Gameinfo'); 
 const router = express.Router();
 
 router.get('/allchildren',auth, async (req, res) => {
@@ -32,7 +32,7 @@ router.get('/allcentres',auth, async (req, res) => {
 });
 
 router.get("/alldoctors/:id?",auth, async (req, res) => {
-    if (req.user.role !== 'admin' && req.user.role !== 'parent') return res.status(403).send('Access Denied');
+    if (!(req.user.role === 'admin'|| req.user.role === 'parent')) return res.status(403).send('Access Denied');
     const {id }= req.params;
     try {
         
@@ -40,6 +40,8 @@ router.get("/alldoctors/:id?",auth, async (req, res) => {
         if (id) {
             
             doctors = await User.findOne({ role: 'doctor', _id: id });
+            console.log(doctors);
+            
             if (!doctors) return res.status(404).send("Doctor not found");
         } else {
             // If no ID is specified, find all doctors
@@ -60,7 +62,7 @@ router.get("/allcaretakers",auth, async (req, res) => {
         res.status(400).send(err);
     }
 });
-router.get('/allgames', auth , async (req, res) => {
+router.get('/allgames', async (req, res) => {
     try {
         const games = await Gameinfo.find();
         res.send(games);

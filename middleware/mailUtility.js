@@ -12,19 +12,25 @@ const sendmail = (parentEmail, subject, text) => {
   });
 
   const mailOptions = {
-    from: `"TechForAutismAndDyslexia" <info@joywithlearning.com>`,
+    from: `"TechForAutismAndDyslexia" <kmpvr2.0@gmail.com>`,
     to: parentEmail,
     subject: subject,
     text: text,
   };
-  let resp;
-  transporter.sendMail(mailOptions, (error, info) => {
+
+  const mailres = transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      resp = false;
-    } else {
-      resp = true;
+      return {
+        success: false,
+        message: error,
+      };
     }
+    return {
+      success: true,
+      message: "Operation Success",
+    };
   });
-  return resp;
+  return mailres;
+
 };
 module.exports = sendmail;

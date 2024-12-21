@@ -116,7 +116,7 @@ router.get('/getConsultations', auth, async (req, res) => {
 router.put('/updateperformance/:childId', auth, async (req, res) => {
     if(!req.user.role === 'caretaker') return res.status(403).send('Access Denied');
     const { childId } = req.params;
-    const { performance,month } = req.body;
+    const { performance,month,therapistFeedback } = req.body;
     if (!childId) return res.status(400).send('Child ID is required');
 
     try {
@@ -125,6 +125,8 @@ router.put('/updateperformance/:childId', auth, async (req, res) => {
         for (let i = 0; i < iep.monthlyGoals.length; i++) {
             if (iep.monthlyGoals[i].month === month) {
                 iep.monthlyGoals[i].performance = performance;
+                iep.monthlyGoals[i].therapistFeedback = therapistFeedback;
+                break;
             }
         }
         await iep.save();
@@ -134,5 +136,27 @@ router.put('/updateperformance/:childId', auth, async (req, res) => {
     }
 });
 
+router.put('/IEPfeedback/:childId', auth, async (req, res) => {
+    const childId = req.params.childId;
+    const {feedback,month} = req.body;
+    if (!childId) return res.status(400).send('Child ID is required');
+    try{
+        const iep = await IEPDoctor.findOne({ childId : childId });
+        if (!iep) return res.status(404).send('IEP not found');
+        for (let i = 0; i < iep.monthlyGoals.length; i++) {
+            if (iep.monthlyGoals[i].month === month) {
+                iep.monthlyGoals[i].doctorFeedback = feedback;
+                break;
+            }
+        }
+        await iep.save();
+        res.status(200).send("Feedback added successfully");
+        
+    }
+    catch(err){
+        res.status(500).send(err);
+    }
+
+});
 
 module.exports = router;

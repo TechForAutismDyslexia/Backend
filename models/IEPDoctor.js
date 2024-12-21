@@ -37,7 +37,15 @@ const IEPDoctorSchema = new mongoose.Schema({
         performance:[{
             type : Number,
             default : 0
-        }]
+        }],
+        therapistFeedback: {
+            type: String,
+            default : ''
+        },
+        doctorFeedback : {
+            type : String,
+            default : ''
+        }
     }],
     selectedMonths : {
         type: [String],

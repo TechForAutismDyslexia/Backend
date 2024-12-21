@@ -7,13 +7,34 @@ const Game = require("../models/GameStatus");
 const Appointment = require("../models/Appointment");
 const Consultation = require("../models/Consultations");
 const router = express.Router();
-const auth = require("../middleware/auth");
-const jwlUser = require("../models/jwlUserSchema");
-const path = require("path");
-const fs = require("fs");
-const sendmail = require("../middleware/mailUtility");
-const fileUpload = require("express-fileupload");
-router.use(fileUpload());
+const auth = require('../middleware/auth');
+const jwlUser = require('../models/jwlUserSchema');
+const multer = require('multer');
+const path = require('path');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const nodemailer = require('nodemailer');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads"); // Ensure 'uploads' directory exists
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + "-" + file.originalname);
+    },
+  });
+
+  const uploads = multer({
+    storage,
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype === "application/pdf") {
+        cb(null, true);
+      } else {
+        cb(new Error("Only PDF files are allowed"), false);
+      }
+    },
+  });
+
 //Admin assigns doctor and caretaker
 router.put("/:id/assign", auth, async (req, res) => {
   if (req.user.role !== "admin") return res.status(403).send("Access Denied");
@@ -115,66 +136,18 @@ router.get("/gametable/:childId", auth, async (req, res) => {
   }
 });
 
-router.post("/bookAppointment", auth, async (req, res) => {
-  if (req.user.role !== "admin" && req.user.role !== "parent") {
-    return res.status(403).send("Access Denied");
-  }
+const upload = multer();
 
-  const {
-    email,
-    parentName,
-    parentId,
-    childName,
-    dob,
-    appointmentDate,
-    gender,
-    parentPhoneNo,
-    alternativeNumber,
-    address,
-    schoolName,
-    classGrade,
-    schoolBoard,
-    consultationType,
-    referredBy,
-    childConcerns,
-    branch,
-    doctorId,
-    time,
-  } = req.body;
-
-  try {
-    const sanitizedEmail = email.split("@")[0];
-    const pdfBuffer = req.files.pdf.data;
-    const uploadDir = "/home/uploads/childReports/";
-    const filePath = path.join(uploadDir, `${sanitizedEmail}_report.pdf`);
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+router.post(
+  "/bookAppointment",
+  auth,
+  upload.single("pdf"),
+  async (req, res) => {
+    if (req.user.role !== "admin" && req.user.role !== "parent") {
+      return res.status(403).send("Access Denied");
     }
-    fs.writeFile(filePath, pdfBuffer, (err) => {
-      if (err) {
-        console.error("Error saving file:", err);
-        return res.status(500).send({
-          success: false,
-          message: "Failed to save the file.",
-        });
-      }
-      return res.status(200).send({
-        success: true,
-        message: "File uploaded successfully.",
-      });
-    });
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    return res.status(500).send({
-      success: false,
-      message: "Failed to upload file.",
-    });
-  }
 
-  const status = req.user.role === "admin" ? "confirmed" : "pending";
-
-  try {
-    const appointment = new Appointment({
+    const {
       email,
       parentName,
       parentId,
@@ -192,78 +165,188 @@ router.post("/bookAppointment", auth, async (req, res) => {
       referredBy,
       childConcerns,
       branch,
-      // medicalReports: `https://${connectionString.split(";")[1].split("=")[1]}.blob.core.windows.net/${containerName}/${blobName}`,
-      time,
       doctorId,
-      status,
-    });
-
-    await appointment.save();
-
-    if (status === "confirmed") {
-      const existingConsultation = await Consultation.findOne({
+      time,
+    } = req.body;
+    const sanitizedParentId = parentId === "null" ? null : parentId;    
+    
+    try {
+      const existingSlot = await Consultation.findOne({
         doctorID: doctorId,
-        parentID: null,
         "slots.date": appointmentDate,
+        "slots.time": time,
+        "slots.booked": true,
       });
 
-      if (existingConsultation) {
-        existingConsultation.slots.push({
-          date: appointmentDate,
-          time,
-          booked: true,
-          appointmentID: appointment._id,
-        });
-        await existingConsultation.save();
-      } else {
-        const newConsultation = new Consultation({
-          doctorID: doctorId,
-          slots: [
-            {
-              date: appointmentDate,
-              time,
-              booked: true,
-              appointmentID: appointment._id,
-            },
-          ],
-        });
-        await newConsultation.save();
-      }
-    } else {
-      const mailsendresponse = sendmail(
-        email,
-        "Appointment Booking",
-        `Your Appointment booking request for ${appointmentDate} at ${time} has been sent to Admin. Please wait for confirmation.`
-      );
-      if (mailsendresponse === false) {
+      if (existingSlot) {
         return res
-          .status(500)
-          .json({ success: false, message: "Error sending mail" });
+          .status(400)
+          .send({ error: "The selected time slot is already booked." });
       }
-      return res
-        .status(200)
-        .send("Appointment booked, awaiting admin approval.");
-    }
-    try {
-      const mailsendresponse = sendmail(
-        email,
-        "Appointment Booking",
-        `Your Appointment booking has been booked for ${appointmentDate} at ${time}. Please be 15mins prior to the Appointment time.`
-      );
-      if (mailsendresponse === false) {
-        return res
-          .status(500)
-          .json({ success: false, message: "Error sending mail" });
-      }
-      return res.status(200).send("Appointment booked successfully");
     } catch (err) {
-      return res.status(500).send({ error: "Failed to send email" });
+      return res
+        .status(500)
+        .send({ error: "Failed to check appointment availability" });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(400).send({ error: "Failed to book appointment" });
+    
+
+    if (req.file) {
+      try {
+        console.log("parent Id " + parentId);
+        const pdfBuffer = req.file.buffer;
+        const blobName = `report_${childName}.pdf`;
+        const blobServiceClient = BlobServiceClient.fromConnectionString(
+          "DefaultEndpointsProtocol=https;AccountName=" +
+            process.env.AZURE_ACCOUNT_NAME +
+            ";AccountKey=" +
+            process.env.AZURE_ACCOUNT_KEY +
+            "==;EndpointSuffix=core.windows.net"
+        );
+        const containerName = "tadchildreports";
+        const containerClient =
+          blobServiceClient.getContainerClient(containerName);
+
+        await containerClient.createIfNotExists();
+
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+        await blockBlobClient.uploadData(pdfBuffer, {
+          blobHTTPHeaders: { blobContentType: req.file.mimetype },
+        });
+      } catch (err) {
+        return res.status(500).send({ error: "Failed to upload file" });
+      }
+    }
+
+    const status = req.user.role === "admin" ? "confirmed" : "pending";
+
+    try {
+      const appointment = new Appointment({
+        email,
+        parentName,
+        parentId:sanitizedParentId,
+        childName,
+        dob,
+        appointmentDate,
+        gender,
+        parentPhoneNo,
+        alternativeNumber,
+        address,
+        schoolName,
+        classGrade,
+        schoolBoard,
+        consultationType,
+        referredBy,
+        childConcerns,
+        branch,
+        time,
+        doctorId,
+        status,
+      });
+
+      await appointment.save();
+
+      if (status === "confirmed") {
+        const existingConsultation = await Consultation.findOne({
+          doctorID: doctorId,
+          parentID: null,
+          "slots.date": appointmentDate,
+        });
+
+        if (existingConsultation) {
+          existingConsultation.slots.push({
+            date: appointmentDate,
+            time,
+            booked: true,
+            appointmentID: appointment._id,
+          });
+          await existingConsultation.save();
+        } else {
+          const newConsultation = new Consultation({
+            doctorID: doctorId,
+            slots: [
+              {
+                date: appointmentDate,
+                time,
+                booked: true,
+                appointmentID: appointment._id,
+              },
+            ],
+          });
+          await newConsultation.save();
+        }
+      } else {
+        const transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: process.env.NODEMAILER_USER,
+            pass: process.env.NODEMAILER_PASS,
+          },
+        });
+
+        const mailOptions = {
+          from: `"TechForAutismAndDyslexia" <kmpvr2.0@gmail.com>`,
+          to: email,
+          subject: "Appointment Booking",
+          text: `Your Appointment booking request for ${appointmentDate} at ${time} has been sent to Admin. Please wait for confirmation.`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return res
+              .status(500)
+              .json({ success: false, message: "Error sending mail" });
+          }
+          return res.status(200).json({
+            success: true,
+            message: "Email Sent Successfully",
+          });
+        });
+        return res
+          .status(200)
+          .send("Appointment booked, awaiting admin approval.");
+      }
+      try {
+        const transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: process.env.NODEMAILER_USER,
+            pass: process.env.NODEMAILER_PASS,
+          },
+        });
+
+        const mailOptions = {
+          from: `"TechForAutismAndDyslexia" <kmpvr2.0@gmail.com>`,
+          to: email,
+          subject: "Appointment Booking",
+          text: `Your Appointment booking has been booked for ${appointmentDate} at ${time}. Please be 15mins prior to the Appointment time.`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return res
+              .status(500)
+              .json({ success: false, message: "Error sending mail" });
+          }
+          return res.status(200).json({
+            success: true,
+            message: "Email Sent Successfully",
+          });
+        });
+      } catch (err) {
+        return res.status(500).send({ error: "Failed to send email" });
+      }
+
+      res.status(200).send("Appointment booked successfully");
+    } catch (err) {
+      console.log(err);
+      res.status(400).send({ error: "Failed to book appointment" });
+    }
   }
-});
+);
 
 router.put("/verifyAppointment/:appointmentID", auth, async (req, res) => {
   if (req.user.role !== "admin") return res.status(403).send("Access Denied");
@@ -315,7 +398,7 @@ router.put("/verifyAppointment/:appointmentID", auth, async (req, res) => {
           from: `"TechForAutismAndDyslexia" <kmpvr2.0@gmail.com>`,
           to: appointment.email,
           subject: "Appointment Booking",
-          text: `Your Appointment booking has been ${status} for ${appointment.appointmentDate} at ${appointment.time}. Please contact Admin for further details.`,
+          text: `Your Appointment booking has been ${status} for ${appointment.appointmentDate} at ${appointment.time}. Please be 15 mins prior to appointment time.`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -339,11 +422,41 @@ router.put("/verifyAppointment/:appointmentID", auth, async (req, res) => {
   }
 });
 
-router.get("/getAppointments", auth, async (req, res) => {
-  if (req.user.role !== "admin") return res.status(403).send("Access Denied");
+router.put('/uploadPrescription/:appointmentID',auth,uploads.single('pdf'),async(req,res)=>{
+    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+    const {appointmentID} = req.params;
+       
+        try{
+            if(!req.file){
+                return res.status(400).send("Presription not uploaded");
+            }
+            const filepath = `uploads/${req.file.filename}`;
+            const appointment = await Appointment.findByIdAndUpdate(
+                appointmentID,
+                {prescription:filepath},
+                {new:true}
+            )
+            if(!appointment){
+                return res.status(400).send("Appointment not found");
 
-  try {
-    const appointments = await Appointment.find({ status: "pending" });
+            }
+            res.status(200).send({
+                message:"Prescription uploaded successfully",
+                prescription:filepath,
+                appointment
+            })
+
+        }
+        catch(error){
+            res.status(500).send('Internal server error');
+        }
+});
+
+router.get('/getAppointments', auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+
+    try {
+        const appointments = await Appointment.find({ status: 'pending' });
 
     res.send(appointments);
   } catch (err) {
@@ -351,9 +464,61 @@ router.get("/getAppointments", auth, async (req, res) => {
   }
 });
 
-router.get("/getConsultations/:doctorID/:date", auth, async (req, res) => {
-  if (req.user.role !== "admin" && req.user.role !== "parent")
-    return res.status(403).send("Access Denied");
+router.get('/get-jwl-enquiries',auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+
+    try {
+        const enquiries = await jwlUser.find({});
+        res.send(enquiries);
+    } catch (err) {
+        res.status(400).send(err);
+    }
+}
+);
+
+router.get('/get-jwluser-video/:parentEmail',auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+
+    try {
+        const parentEmail = req.params.parentEmail;
+        const sanitizedEmail = parentEmail.split('@')[0];
+
+        res.sendFile(path.join(__dirname,'../get-test-video.mp4'));
+    } catch (err) {
+        res.status(400).send(err);
+    }
+}
+);
+
+router.delete('/delete-jwl-enquiry/:parentEmail',auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).send("Access Denied");
+
+    try {
+        const parentEmail = req.params.parentEmail;
+        const enquiry = await jwlUser.deleteOne({ parentEmail: parentEmail });;
+        res.status(200).send(enquiry);
+    } catch (err) {
+        console.log(err);
+        res.status(400).send(err);
+    }
+}
+);
+
+router.get('/getAppointments/:doctorID',auth,async(req,res)=>{
+    if (req.user.role === 'caretaker') return res.status(403).send("Access Denied");
+    try{
+        const appointment = await Appointment.find({doctorId:req.params.doctorID,status:'confirmed'});
+        res.send(appointment);
+    }
+    catch(error){
+        res.status(500).send("Internal server error");
+    }
+})
+
+
+
+router.get('/getConsultations/:doctorID/:date', auth, async (req, res) => {
+    if (req.user.role !== 'admin' && req.user.role !== "parent") return res.status(403).send('Access Denied');
 
   try {
     const consultations = await Consultation.find({
@@ -363,53 +528,6 @@ router.get("/getConsultations/:doctorID/:date", auth, async (req, res) => {
 
     res.send(consultations);
   } catch (err) {
-    res.status(400).send(err);
-  }
-});
-
-router.get("/get-jwl-enquiries", auth, async (req, res) => {
-  if (req.user.role !== "admin") return res.status(403).send("Access Denied");
-
-  try {
-    const enquiries = await jwlUser.find({});
-    res.send(enquiries);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
-
-router.get("/get-jwluser-video/:parentEmail", auth, async (req, res) => {
-  if (req.user.role !== "admin") return res.status(403).send("Access Denied");
-
-  try {
-    const parentEmail = req.params.parentEmail;
-    const sanitizedEmail = parentEmail.split("@")[0];
-    const videoDir = "/home/uploads/jwluploads/";
-    const videoPath = path.join(videoDir, `${sanitizedEmail}.mp4`);
-    res.sendFile(videoPath);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
-
-router.delete("/delete-jwl-enquiry/:parentEmail", auth, async (req, res) => {
-  if (req.user.role !== "admin") return res.status(403).send("Access Denied");
-
-  try {
-    const parentEmail = req.params.parentEmail;
-    const enquiry = await jwlUser.deleteOne({ parentEmail: parentEmail });
-    const sanitizedEmail = parentEmail.split("@")[0];
-    const videoPath = `/home/uploads/jwluploads/${sanitizedEmail}.mp4`;
-    fs.unlink(videoPath,(err) => {
-      if (err) {
-        // console.error('Error deleting the file:', err);
-      } else {
-        // console.log('File deleted successfully');
-      }
-    });
-    res.status(200).send(enquiry);
-  } catch (err) {
-    console.log(err);
     res.status(400).send(err);
   }
 });

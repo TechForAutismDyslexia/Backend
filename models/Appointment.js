@@ -29,7 +29,7 @@ const AppointmentSchema = new Schema({
   },
   gender: {
     type: String,
-    enum: ['Male', 'Female'],
+    enum: ['Male', 'Female', 'Others'],
     required: true
   },
   parentPhoneNo: {
@@ -95,6 +95,10 @@ const AppointmentSchema = new Schema({
   medicalReports: {
     type: String,
     required: false
+  },
+  prescription: {
+    type:String,
+    default:''
   },
   status: { type: String, enum: ['pending', 'confirmed', 'rejected'], default: 'pending' }
 });

@@ -5,6 +5,8 @@ const Child = require('../models/child');
 const Game = require('../models/GameStatus');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const Consultation = require('../models/Consultations');
+const Appointment = require("../models/Appointment");
 
 // Add child information (Parent)
 router.post('/childinfo', auth, async (req, res) => {
@@ -55,7 +57,7 @@ router.get('/children', auth, async (req, res) => {
         if (!consultations.length) {
             return res.status(404).send('No consultations found for this parent on this date');
         }
-        console.log(consultations);
+        // console.log(consultations);
         res.send(consultations);
 
     } catch (err) {
@@ -63,5 +65,17 @@ router.get('/children', auth, async (req, res) => {
         res.status(400).send(err.message); // Send error message to the client
     }
 });
+
+router.get('/getAppointments/:parentId',auth,async(req,res)=>{
+    if (req.user.role !== 'parent') return res.status(403).send("Access Denied");
+    try{
+        const appointment = await Appointment.find({parentId:req.params.parentId,status:'confirmed'});
+        res.send(appointment);
+    }
+    catch(error){
+        res.status(500).send("Internal server error");
+    }
+})
+
 
 module.exports = router;
