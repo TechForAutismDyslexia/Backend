@@ -19,6 +19,7 @@ const Sentenceverificationglobal = require('./routes/games/sentenceverificationg
 const dragandmatch = require('./routes/games/dragandmatch');
 const connectingletters = require('./routes/games/connectingletters');
 const Imagematching = require('./routes/games/imagematching');
+const Sentenceverificationbridging = require('./routes/games/Sentenceverificationbridging');
 const app = express();
 const PORT = process.env.PORT || 4000;
 require('dotenv').config();
@@ -27,7 +28,7 @@ require('dotenv').config();
 app.use(bodyParser.json());
 app.use(cors());
 // Database connection
-mongoose.connect('mongodb+srv://tadrw:tad12345@cluster0.shaeuvf.mongodb.net/tfad')
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
@@ -48,6 +49,7 @@ app.use('/api/sentenceverificationglobal',Sentenceverificationglobal);
 app.use('/api/dragandmatch',dragandmatch);
 app.use('/api/connectingletters',connectingletters);
 app.use('/api/imagematching',Imagematching);
+app.use('/api/sentenceverificationbridging',Sentenceverificationbridging);
 
 app.get('/api' , (req,res) => {
     res.send('Hello JoywithLearning!');
