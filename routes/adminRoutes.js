@@ -437,7 +437,7 @@ router.get("/get-jwl-enquiries/:center", auth, async (req, res) => {
 
   try {
     const enquiries = await jwlUser.find({
-      preferredCenter: req.params.center,
+      // preferredCenter: req.params.center,
       isVerified: false,
     });
     res.send(enquiries);
@@ -447,7 +447,6 @@ router.get("/get-jwl-enquiries/:center", auth, async (req, res) => {
 });
 
 router.get("/get-jwluser-video/:parentEmail", auth, async (req, res) => {
-  console.log(req.user.role);
   if (req.user.role === "caretaker" || req.user.role==="parent") return res.status(403).send("Access Denied");
 
   try {
@@ -460,6 +459,7 @@ router.get("/get-jwluser-video/:parentEmail", auth, async (req, res) => {
 });
 
 router.put("/archive-jwl-enquiry/:parentEmail", auth, async (req, res) => {
+   console.log("hello" , req.user.role);
   if (req.user.role !== "admin") return res.status(403).send("Access Denied");
 
   try {
