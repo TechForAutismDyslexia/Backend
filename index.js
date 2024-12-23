@@ -20,6 +20,7 @@ const dragandmatch = require('./routes/games/dragandmatch');
 const connectingletters = require('./routes/games/connectingletters');
 const Imagematching = require('./routes/games/imagematching');
 const Sentenceverificationbridging = require('./routes/games/Sentenceverificationbridging');
+const Windowsequencing = require('./routes/games/Windowsequencing');
 const app = express();
 const PORT = process.env.PORT || 4000;
 require('dotenv').config();
@@ -50,6 +51,7 @@ app.use('/api/dragandmatch',dragandmatch);
 app.use('/api/connectingletters',connectingletters);
 app.use('/api/imagematching',Imagematching);
 app.use('/api/sentenceverificationbridging',Sentenceverificationbridging);
+app.use('/api/windowsequencing',Windowsequencing);
 
 app.get('/api' , (req,res) => {
     res.send('Hello JoywithLearning!');
