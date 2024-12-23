@@ -51,6 +51,11 @@ const jwlUserSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
+  enquiryDate: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("jwlUser", jwlUserSchema);

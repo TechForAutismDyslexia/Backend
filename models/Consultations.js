@@ -11,6 +11,10 @@ const consultationSchema = new mongoose.Schema({
     ref:'User',
     default: null
   },
+  childName: {
+    type: String,
+    required: true
+  },
   slots: [{
     date: {
       type: String,

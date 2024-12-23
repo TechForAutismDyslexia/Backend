@@ -42,20 +42,20 @@ const AppointmentSchema = new Schema({
   },
   address: {
     type: String,
-    required: true
+    required: false
   },
   schoolName: {
     type: String,
-    required: true
+    required: false
   },
   classGrade: {
     type: String,
-    required: true
+    required: false
   },
   schoolBoard: {
     type: String,
     enum: ['CBSE', 'SSC', 'ICSE', 'Camebridge (IB)', 'NIOS', 'others'],
-    required: true
+    required: false
   },
   consultationType: {
     type: String,
@@ -76,9 +76,8 @@ const AppointmentSchema = new Schema({
   branch: {
     type: String,
     enum: [
-      'Bowenpally', 'Barkathpura', 'Champapet',
-      'Nacharam', 'Neredmet', 'Kukatpally',
-      'Banjarahills', 'Manikonda', 'Suchitra'
+      'Himayathnagar', 'Barkathpura', 'Champapet',
+      'Nacharam'
     ],
     required: true
   },

@@ -4,12 +4,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const mailUtility = require('../middleware/mailUtility');
+
 require('dotenv').config();
-// Register
-router.post('/register', async (req, res) => {
+router.post('/register', auth, async (req, res) => {
+  if(req.user.role !== 'admin') return res.status(403).send('Access Denied');
+
   const { username, password, name, mobilenumber,email} = req.body;
   const role = 'parent';
-  //check if user already exists
   const user = await User.findOne({ username});
   if (user) return res.status(401).send('User already exists');
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,13 +19,26 @@ router.post('/register', async (req, res) => {
 
   try {
     const savedUser = await users.save();
+    const mailBody = `Thank you for contacting us. We hope you have a great experience with us. Your username is ${username} and password is ${password}.
+    
+    You can login to your account at https://portal.joywithlearning.com/login`;
+
+    try{
+        const mailResponse = mailUtility(email, 'Welcome to Joy With Learning', mailBody);
+    }
+    catch(err){
+        return res.status(500).json({
+            success: false,
+            message: 'Mail not sent'
+        });
+    }
+    
     res.send(savedUser);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send({success:false,message: 'User not saved'});
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   try{
     const { username, password } = req.body;

@@ -14,10 +14,11 @@ router.get('/assigned', auth, async (req, res) => {
 
   try {
     const children = await Child.find({ doctorId: req.user._id }).populate('caretakerId');
+    children.reverse();
     res.send(children);
   } catch (err) {
     res.status(400).send(err);
-  }
+  } 
 });
 
 // Feedback

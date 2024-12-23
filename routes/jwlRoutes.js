@@ -34,14 +34,12 @@ router.post("/send-otp", async (req, res) => {
       });
     }
 
-    // Generate OTP
     let otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
     });
 
-    // Ensure OTP is unique (not strictly necessary for a one-time code)
     while (await OTP.findOne({ otp })) {
       otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
@@ -50,7 +48,6 @@ router.post("/send-otp", async (req, res) => {
       });
     }
 
-    // Save OTP to database
     const otpPayload = { email: otpEmail, otp };
     const otpBody = await OTP.create(otpPayload);
 
@@ -122,7 +119,6 @@ router.post("/verify-otp", async (req, res) => {
 
 router.post("/enquire", jwlauth, async (req, res) => {
   try {
-    // Get input data
     const {
       childName,
       childAge,
@@ -136,7 +132,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
 
     const checklist = JSON.parse(req.body.checklist);
 
-    // Check if all details are provided
     if (
       !childName ||
       !childAge ||
@@ -153,7 +148,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
       });
     }
 
-    // Check if user already exists
     const existingUser = await jwlUser.findOne({ parentEmail });
     if (existingUser) {
       return res.status(400).json({
@@ -162,7 +156,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
       });
     }
 
-    // Create user
     const newUser = await jwlUser.create({
       childName,
       childAge,
@@ -183,7 +176,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    // Save file to the uploads folder
     fs.writeFile(filePath, file.data, (err) => {
       if (err) {
         console.error(err);
@@ -192,7 +184,6 @@ router.post("/enquire", jwlauth, async (req, res) => {
           message: "Failed to save the file.",
         });
       }
-      // Send Success Message via email
       const mailsendres = sendmail(
         parentEmail,
         "Enquiry Success",
